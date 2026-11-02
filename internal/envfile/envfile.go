@@ -249,7 +249,7 @@ func expandEscapes(s string) string {
 			b.WriteString("$$")
 		case 'u':
 			if i+6 <= len(s) {
-				if v, err := strconv.ParseUint(s[i+2:i+6], 16, 32); err == nil && utf8.ValidRune(rune(v)) {
+				if v, err := strconv.ParseUint(s[i+2:i+6], 16, 16); err == nil && utf8.ValidRune(rune(v)) {
 					b.WriteRune(rune(v))
 					i += 5
 					continue

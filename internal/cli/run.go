@@ -780,10 +780,9 @@ func appendNewline(raw []byte) []byte {
 	if len(raw) == 0 || raw[len(raw)-1] == '\n' {
 		return raw
 	}
-	out := make([]byte, len(raw)+1)
-	copy(out, raw)
-	out[len(raw)] = '\n'
-	return out
+	// The three-index slice caps capacity, so append always copies and never
+	// writes into the caller's backing array.
+	return append(raw[:len(raw):len(raw)], '\n')
 }
 
 func sameFSPath(a, b string) bool {
