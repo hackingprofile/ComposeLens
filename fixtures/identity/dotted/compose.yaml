@@ -1,0 +1,5 @@
+services:
+  web.api:
+    image: nginx:1.25
+    environment:
+      FOO: bar

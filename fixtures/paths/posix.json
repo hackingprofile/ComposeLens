@@ -1,0 +1,29 @@
+{
+  "goos": "posix",
+  "cases": [
+    {
+      "name": "simple-join",
+      "projectDir": "/home/demo/proj",
+      "relative": "compose.yaml",
+      "wantSlash": "/home/demo/proj/compose.yaml"
+    },
+    {
+      "name": "dot-rel",
+      "projectDir": "/home/demo/proj/app",
+      "relative": "./compose.yaml",
+      "wantSlash": "/home/demo/proj/app/compose.yaml"
+    },
+    {
+      "name": "parent-rel",
+      "projectDir": "/home/demo/proj/app",
+      "relative": "../compose.yaml",
+      "wantSlash": "/home/demo/proj/compose.yaml"
+    },
+    {
+      "name": "already-abs",
+      "projectDir": "/home/demo/proj",
+      "relative": "/var/compose.yaml",
+      "wantSlash": "/var/compose.yaml"
+    }
+  ]
+}

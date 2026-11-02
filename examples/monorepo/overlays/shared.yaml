@@ -1,0 +1,5 @@
+# Shared overlay for the web app. Apply with a second --file from the monorepo root.
+services:
+  web:
+    environment:
+      SHARED_FLAG: demo-overlay

@@ -1,0 +1,6 @@
+services:
+  web:
+    image: alpine
+    environment:
+      REQUIRED: ${MUST:?must be set}
+      OPTIONAL: a${MAYBE?x}b

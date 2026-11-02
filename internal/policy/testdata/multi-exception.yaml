@@ -1,0 +1,9 @@
+schema: composelens.policy.v0
+exceptions:
+  - rule: CHK01
+    expires: "2099-12-31"
+    zeta: 1
+    beta: 1
+  - rule: CHK02
+    expires: "2099-12-31"
+    alpha: 1

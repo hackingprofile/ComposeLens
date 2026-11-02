@@ -1,0 +1,2 @@
+schema: &s composelens.policy.v0
+rules: *s

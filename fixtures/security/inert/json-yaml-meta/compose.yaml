@@ -1,0 +1,8 @@
+services:
+  web:
+    image: alpine
+    hostname: ${COLOR:-web}
+    environment:
+      NOTE: '{"k":"v","q":"a\"b"}'
+    labels:
+      caption: "a: b, [seq], {map}"

@@ -1,0 +1,8 @@
+services:
+  web:
+    image: alpine
+    environment:
+      X_INTERNAL_ID: site-id-0001
+      CUSTOM_SHAPE: clx_aaaaaaaaaaaaaaaaaaaaaaaa
+      PUBLIC_TOKEN: license-spdx-mit
+      API_TOKEN: keyed-secret-value

@@ -1,0 +1,14 @@
+services:
+  web:
+    image: alpine
+    ports:
+      - target: 8000
+        published: "8000"
+        protocol: tcp
+      - target: 8000
+        protocol: tcp
+      - target: 8000
+        published: "8000"
+        host_ip: 127.0.0.1
+        protocol: tcp
+        mode: ingress

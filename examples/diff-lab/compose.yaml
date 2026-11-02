@@ -1,0 +1,8 @@
+services:
+  web:
+    image: alpine
+    env_file:
+      - ${SIDE_FILE:-left.env}
+  debug:
+    image: alpine
+    profiles: [debug]

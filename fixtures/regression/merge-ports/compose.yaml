@@ -1,0 +1,6 @@
+services:
+  web:
+    image: alpine
+    ports:
+      - "8080:80"
+      - "9090:80"

@@ -1,0 +1,78 @@
+title = "ComposeLens"
+
+[extend]
+useDefault = true
+
+# Synthetic GitHub-token probes used only by Go tests to check redaction.
+# Each is allow-listed by its exact anchored value, for its own rule, and
+# only in Go test files under internal/. A real token, any other value, or
+# the same value outside a test file still fails the scan.
+# internal/ci TestGitleaksAllowlistCoversSyntheticProbes keeps this list in
+# step with the probes in the tests.
+[[rules]]
+id = "github-pat"
+
+  [[rules.allowlists]]
+  description = "synthetic GitHub personal access token probes in Go tests"
+  condition = "AND"
+  regexTarget = "secret"
+  regexes = [
+    '''^ghp_ComposeLensCapProbe99$''',
+    '''^ghp_ComposeLensCheckProbe9999$''',
+    '''^ghp_ComposeLensEngineProbe99$''',
+    '''^ghp_ComposeLensGraphProbe99$''',
+    '''^ghp_ComposeLensNormProbe99xxxxxxxx$''',
+    '''^ghp_ComposeLensPanicProbe99$''',
+    '''^ghp_ComposeLensProfileProbe99$''',
+    '''^ghp_abcdefghijklmnopqrstuvwxyz0123456789$''',
+    '''^ghp_base000011112222333344445555678$''',
+    '''^ghp_direct0000111122223333444455556$''',
+    '''^ghp_external0000111122223333444455$''',
+    '''^ghp_hidden0000111122223333444455$''',
+    '''^ghp_overlay000011112222333344445555$''',
+    '''^ghp_unused00001111222233334444555$''',
+  ]
+  paths = [
+    '''(^|[\\/])internal[\\/].+_test\.go$''',
+  ]
+
+[[rules]]
+id = "github-oauth"
+
+  [[rules.allowlists]]
+  description = "synthetic GitHub OAuth token probe in Go tests"
+  condition = "AND"
+  regexTarget = "secret"
+  regexes = [
+    '''^gho_abcdefghijklmnopqrstuvwxyz0123456789$''',
+  ]
+  paths = [
+    '''(^|[\\/])internal[\\/].+_test\.go$''',
+  ]
+
+[[rules]]
+id = "github-fine-grained-pat"
+
+  [[rules.allowlists]]
+  description = "synthetic fine-grained GitHub token probe in Go tests"
+  condition = "AND"
+  regexTarget = "secret"
+  regexes = [
+    '''^github_pat_abcdefghijklmnopqrstuvwxyz0123456789$''',
+  ]
+  paths = [
+    '''(^|[\\/])internal[\\/].+_test\.go$''',
+  ]
+
+# The generic API-key rule fires on assignment-shaped test fixtures (for
+# example a KEY=value probe) whose exact text differs between gitleaks
+# releases. It is allow-listed by path only, for Go test files under
+# internal/; every vendor-token rule above stays value-scoped.
+[[rules]]
+id = "generic-api-key"
+
+  [[rules.allowlists]]
+  description = "synthetic assignment-shaped probes in Go tests"
+  paths = [
+    '''(^|[\\/])internal[\\/].+_test\.go$''',
+  ]

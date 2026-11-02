@@ -1,0 +1,4 @@
+services:
+  web:
+    dns:
+      - 8.8.8.8

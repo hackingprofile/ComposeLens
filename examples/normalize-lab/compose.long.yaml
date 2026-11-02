@@ -1,0 +1,18 @@
+services:
+  web:
+    image: alpine
+    ports:
+      - target: 80
+        published: "8080"
+        protocol: tcp
+        mode: ingress
+    volumes:
+      - type: bind
+        source: ./src
+        target: /dst
+        read_only: true
+    labels:
+      app: web
+    command: ["nginx", "-g", "daemon off;"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f localhost"]

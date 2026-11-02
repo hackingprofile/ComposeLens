@@ -1,0 +1,5 @@
+schema: composelens.policy.v0
+rules:
+  - id: CHK05
+    enabled: false
+    enabled: true

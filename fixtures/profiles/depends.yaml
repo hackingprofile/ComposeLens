@@ -1,0 +1,10 @@
+# Issue-derived: profiled dependency pulled in by depends_on of a core service.
+services:
+  web:
+    image: nginx
+    depends_on:
+      - db
+  db:
+    image: postgres
+    profiles:
+      - storage

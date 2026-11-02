@@ -1,0 +1,4 @@
+# Third overlay: last scalar wins.
+services:
+  web:
+    image: alpine

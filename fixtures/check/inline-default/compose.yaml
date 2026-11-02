@@ -1,0 +1,8 @@
+# CHK01: interpolation default that becomes the effective secret (demo values, not tokens).
+
+services:
+  web:
+    image: alpine
+    environment:
+      DIRECT_SECRET: demo-inline
+      DEFAULT_SECRET: ${UNSET_VAR:-demo-hidden}

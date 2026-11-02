@@ -1,0 +1,8 @@
+services:
+  api:
+    image: alpine
+    profiles:
+      - debug
+    environment:
+      APP_ENV: demo
+      COLOR: green

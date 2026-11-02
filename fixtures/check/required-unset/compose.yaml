@@ -1,0 +1,5 @@
+# CHK02: required interpolation is unset (required-error). MUST is intentionally absent.
+
+services:
+  web:
+    image: "${MUST:?must be set}"

@@ -1,0 +1,1930 @@
+schema: composelens.fixtax.v0
+fixtures:
+  - id: yaml.simple
+    feature: yaml
+    kind: baseline
+    description: Two services with YAML source locations preserved
+    provenance: {source: synthetic, note: parse fixture}
+    files: [yaml/simple.yaml]
+    expected:
+      engine: pending-engine
+      local:
+        assertion: parse-services
+        services: [web, db]
+  - id: yaml.anchors
+    feature: yaml
+    kind: baseline
+    description: Anchors, aliases, and merge keys survive parse
+    provenance: {source: synthetic, note: parse fixture}
+    files: [yaml/anchors.yaml]
+    expected:
+      engine: pending-engine
+      local:
+        assertion: parse-services
+        services: [web, worker]
+  - id: yaml.json
+    feature: yaml
+    kind: baseline
+    description: JSON Compose file parsed via YAML
+    provenance: {source: synthetic, note: parse fixture}
+    files: [yaml/compose.json]
+    expected:
+      engine: pending-engine
+      local:
+        assertion: parse-services
+        services: [api]
+  - id: paths.windows
+    feature: paths
+    kind: platform
+    description: Windows path join/clean cases
+    provenance: {source: synthetic, note: cross-platform fixture}
+    files: [paths/windows.json]
+    expected:
+      engine: pending-engine
+      local: {assertion: path-cases, goos: windows}
+  - id: paths.posix
+    feature: paths
+    kind: platform
+    description: POSIX path join/clean cases
+    provenance: {source: synthetic, note: cross-platform fixture}
+    files: [paths/posix.json]
+    expected:
+      engine: pending-engine
+      local: {assertion: path-cases, goos: posix}
+
+  - id: interpolation.official
+    feature: interpolation
+    kind: baseline
+    description: Compose specification interpolation forms
+    provenance: {source: official, note: Compose specification examples; engine config not compared}
+    files: [interpolation/official.yaml]
+    expected:
+      engine: pending-engine
+      local:
+        assertion: interp-path-states
+        env:
+          IMAGE: nginx:1.27-alpine
+          HOST: web.local
+          ENTRY: "1"
+          FLAG: ""
+          MUST: present
+          MAYBE: ""
+        paths:
+          - {path: services.official.image, resolved: nginx:1.27-alpine, state: resolved}
+          - {path: services.official.hostname, resolved: web.local, state: resolved}
+          - {path: services.official.working_dir, resolved: /app, state: defaulted}
+          - {path: services.official.environment.LITERAL_DOLLAR, resolved: $VAR, state: escaped-literal}
+  - id: interpolation.issues
+    feature: interpolation
+    kind: regression
+    description: Empty vs unset, adjacent text, unrecognized dollar; recursive defaults deferred
+    provenance: {source: issue-derived}
+    files: [interpolation/issues.yaml]
+    expected:
+      engine: pending-engine
+      local:
+        assertion: interp-path-states
+        env: {IMAGE: nginx, QUOTED: quoted-host, EMPTY: ""}
+        paths:
+          - {path: services.issues.image, resolved: pre-nginx-post, state: resolved}
+          - {path: services.issues.environment.FALLBACK_EMPTY, resolved: fallback, state: defaulted}
+          - {path: services.issues.environment.NESTED_DEFAULT, resolved: "", state: defaulted}
+
+  - id: interpolation.corpus.var-set-unset
+    feature: interpolation
+    kind: baseline
+    description: ${VAR} set vs unset (unset → empty)
+    provenance: {source: synthetic, note: "baseline; live-pinned docker compose v5.4.0"}
+    files: [corpus/interp/var-set-unset/compose.yaml, corpus/interp/var-set-unset/.env]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: services.web.image, value: alpine}
+        - {path: services.web.hostname, value: prepost}
+        - {path: web:SET, value: hello}
+      local:
+        assertion: interp-path-states
+        env: {IMAGE: alpine, SETVAR: hello}
+        paths:
+          - {path: services.web.image, resolved: alpine, state: resolved}
+          - {path: services.web.hostname, resolved: prepost, state: absent-empty}
+          - {path: services.web.environment.SET, resolved: hello, state: resolved}
+  - id: interpolation.corpus.colon-default
+    feature: interpolation
+    kind: baseline
+    description: ${VAR:-default} empty and unset
+    provenance: {source: synthetic, note: "baseline; live-pinned docker compose v5.4.0"}
+    files: [corpus/interp/colon-default/compose.yaml, corpus/interp/colon-default/.env]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: web:FROM_EMPTY, value: fallback}
+        - {path: web:FROM_UNSET, value: fallback}
+        - {path: web:FROM_SET, value: kept}
+      local:
+        assertion: interp-path-states
+        env: {EMPTY: "", SET: kept}
+        paths:
+          - {path: services.web.environment.FROM_EMPTY, resolved: fallback, state: defaulted}
+          - {path: services.web.environment.FROM_UNSET, resolved: fallback, state: defaulted}
+          - {path: services.web.environment.FROM_SET, resolved: kept, state: resolved}
+  - id: interpolation.corpus.dash-default
+    feature: interpolation
+    kind: baseline
+    description: ${VAR-default} unset vs empty kept
+    provenance: {source: synthetic, note: "baseline; live-pinned docker compose v5.4.0"}
+    files: [corpus/interp/dash-default/compose.yaml, corpus/interp/dash-default/.env]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: web:FROM_EMPTY, value: xx}
+        - {path: web:FROM_UNSET, value: fallback}
+        - {path: web:FROM_SET, value: kept}
+      local:
+        assertion: interp-path-states
+        env: {EMPTY: "", SET: kept}
+        paths:
+          - {path: services.web.environment.FROM_EMPTY, resolved: xx, state: resolved}
+          - {path: services.web.environment.FROM_UNSET, resolved: fallback, state: defaulted}
+          - {path: services.web.environment.FROM_SET, resolved: kept, state: resolved}
+  - id: interpolation.corpus.required-ok
+    feature: interpolation
+    kind: baseline
+    description: ${VAR:?err} and ${VAR?err} when set or empty-ok
+    provenance: {source: synthetic, note: "baseline; live-pinned docker compose v5.4.0"}
+    files: [corpus/interp/required-ok/compose.yaml, corpus/interp/required-ok/.env]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: web:REQUIRED, value: present}
+        - {path: web:OPTIONAL_REQUIRED, value: ab}
+      local:
+        assertion: interp-path-states
+        env: {MUST: present, MAYBE: ""}
+        paths:
+          - {path: services.web.environment.REQUIRED, resolved: present, state: resolved}
+          - {path: services.web.environment.OPTIONAL_REQUIRED, resolved: ab, state: resolved}
+  - id: interpolation.corpus.required-unset
+    feature: interpolation
+    kind: baseline
+    description: ${VAR:?err} when unset — live engine interpolation error
+    provenance: {source: synthetic, note: "baseline; live docker compose v5.4.0 fails config"}
+    files: [corpus/interp/required-unset/compose.yaml]
+    expected:
+      engine: engine-error
+      enginePin: v5.4.0
+      local:
+        assertion: interp-path-states
+        paths:
+          - {path: services.web.environment.REQUIRED, resolved: "", state: required-error}
+  - id: interpolation.corpus.plus-alt
+    feature: interpolation
+    kind: baseline
+    description: ${VAR:+alt} and ${VAR+alt}
+    provenance: {source: synthetic, note: "baseline; live-pinned docker compose v5.4.0"}
+    files: [corpus/interp/plus-alt/compose.yaml, corpus/interp/plus-alt/.env]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: web:COLON_SET, value: "yes"}
+        - {path: web:COLON_EMPTY, value: xx}
+        - {path: web:COLON_UNSET, value: xx}
+        - {path: web:PLUS_SET, value: "yes"}
+        - {path: web:PLUS_EMPTY, value: "yes"}
+        - {path: web:PLUS_UNSET, value: xx}
+      local:
+        assertion: interp-path-states
+        env: {FLAG: on, EMPTY: ""}
+        paths:
+          - {path: services.web.environment.COLON_SET, resolved: "yes", state: resolved}
+          - {path: services.web.environment.COLON_EMPTY, resolved: xx, state: absent-empty}
+          - {path: services.web.environment.PLUS_EMPTY, resolved: "yes", state: resolved}
+  - id: interpolation.corpus.escape
+    feature: interpolation
+    kind: baseline
+    description: "$$ escaping; live runtime $VAR / ${notavar} / pre-$HOME-post MATCH (dump prints $$)"
+    provenance: {source: synthetic, note: "escaped-literal; live-pinned docker compose v5.4.0"}
+    files: [corpus/interp/escape/compose.yaml]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: web:LITERAL, value: "$VAR"}
+        - {path: web:LITERAL_BRACED, value: "${notavar}"}
+        - {path: web:MIXED, value: "pre-$HOME-post"}
+      local:
+        assertion: interp-path-states
+        paths:
+          - {path: services.web.environment.LITERAL, resolved: "$VAR", state: escaped-literal}
+          - {path: services.web.environment.LITERAL_BRACED, resolved: "${notavar}", state: escaped-literal}
+          - {path: services.web.environment.MIXED, resolved: "pre-$HOME-post", state: escaped-literal}
+  - id: interpolation.corpus.bare-adjacent
+    feature: interpolation
+    kind: baseline
+    description: Bare $VAR, adjacent text, consecutive vars
+    provenance: {source: synthetic, note: "baseline; live-pinned docker compose v5.4.0"}
+    files: [corpus/interp/bare-adjacent/compose.yaml, corpus/interp/bare-adjacent/.env]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: services.web.hostname, value: web}
+        - {path: web:BARE, value: web}
+        - {path: web:ADJACENT, value: prewebpost}
+        - {path: web:CONSEC, value: webweb}
+      local:
+        assertion: interp-path-states
+        env: {HOST: web}
+        paths:
+          - {path: services.web.hostname, resolved: web, state: resolved}
+          - {path: services.web.environment.BARE, resolved: web, state: resolved}
+          - {path: services.web.environment.ADJACENT, resolved: prewebpost, state: resolved}
+          - {path: services.web.environment.CONSEC, resolved: webweb, state: resolved}
+  - id: interpolation.corpus.default-ref
+    feature: interpolation
+    kind: baseline
+    description: Default that references another variable; the reference inside the default is expanded as the engine does (other-value)
+    provenance: {source: synthetic, note: "nested default; live-pinned docker compose v5.4.0"}
+    files: [corpus/interp/default-ref/compose.yaml, corpus/interp/default-ref/.env]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: web:NESTED, value: other-value}
+      local:
+        assertion: interp-path-states
+        env: {OTHER: other-value}
+        paths:
+          - {path: services.web.environment.NESTED, resolved: other-value, state: defaulted}
+  - id: interpolation.corpus.workdir-default
+    feature: interpolation
+    kind: baseline
+    description: ${VAR:-default} on working_dir
+    provenance: {source: synthetic, note: "baseline; live-pinned docker compose v5.4.0"}
+    files: [corpus/interp/workdir-default/compose.yaml]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: services.web.working_dir, value: /app}
+        - {path: services.web.image, value: alpine}
+      local:
+        assertion: interp-path-states
+        paths:
+          - {path: services.web.working_dir, resolved: /app, state: defaulted}
+  - id: interpolation.corpus.user-dash
+    feature: interpolation
+    kind: baseline
+    description: ${VAR-default} on user
+    provenance: {source: synthetic, note: "baseline; live-pinned docker compose v5.4.0"}
+    files: [corpus/interp/user-dash/compose.yaml]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: services.web.user, value: nobody}
+        - {path: services.web.image, value: alpine}
+      local:
+        assertion: interp-path-states
+        paths:
+          - {path: services.web.user, resolved: nobody, state: defaulted}
+
+  - id: merge.overlay
+    feature: merge
+    kind: baseline
+    description: Scalar override, map deep-merge, sequence append
+    provenance: {source: official, note: Compose overlay examples}
+    files: [merge/base.yaml, merge/overlay.yaml]
+    expected:
+      engine: pending-engine
+      local:
+        assertion: merge-path-equals
+        paths:
+          - {path: services.web.image, value: redis}
+          - {path: services.web.hostname, value: from-base}
+          - {path: services.web.environment.C, value: three}
+          - {path: services.web.ports, value: "[80:80, 443:443, 8080:80]"}
+  - id: merge.three-file
+    feature: merge
+    kind: baseline
+    description: Last scalar wins across three files
+    provenance: {source: official}
+    files: [merge/base.yaml, merge/overlay.yaml, merge/third.yaml]
+    expected:
+      engine: pending-engine
+      local:
+        assertion: merge-path-equals
+        paths:
+          - {path: services.web.image, value: alpine}
+  - id: merge.reset
+    feature: merge
+    kind: regression
+    description: "!reset clears a mapping branch"
+    provenance: {source: issue-derived}
+    files: [merge/base.yaml, merge/reset.yaml]
+    expected:
+      engine: pending-engine
+      local:
+        assertion: merge-path-equals
+        paths:
+          - {path: services.web.environment, action: reset}
+  - id: merge.override-tag
+    feature: merge
+    kind: regression
+    description: "!override replaces a mapping instead of deep-merge"
+    provenance: {source: issue-derived}
+    files: [merge/base.yaml, merge/override.yaml]
+    expected:
+      engine: pending-engine
+      local:
+        assertion: merge-path-equals
+        paths:
+          - {path: services.web.environment.ONLY, value: kept}
+          - {path: services.web.environment.A, absentPath: true}
+
+  - id: profiles.official
+    feature: profiles
+    kind: baseline
+    description: Always-on core vs profile-gated services with no active profile
+    provenance: {source: official}
+    files: [profiles/official.yaml]
+    expected:
+      engine: pending-engine
+      local:
+        assertion: profiles-states
+        paths:
+          - {path: web, state: enabled}
+          - {path: debug, state: disabled}
+          - {path: worker, state: disabled}
+  - id: profiles.depends
+    feature: profiles
+    kind: regression
+    description: Profiled depends_on target is not auto-enabled (certainty unknown)
+    provenance: {source: issue-derived, note: profiled depends_on not auto-enabled}
+    files: [profiles/depends.yaml]
+    expected:
+      engine: pending-engine
+      local:
+        assertion: profiles-states
+        paths:
+          - {path: web, state: enabled}
+          - {path: db, state: disabled, certainty: unknown}
+
+  - id: include.short
+    feature: include
+    kind: baseline
+    description: Short-form include with including-file override
+    provenance: {source: official}
+    files: [include/short/compose.yaml, include/short/base.yaml]
+    expected:
+      engine: pending-engine
+      local:
+        assertion: include-merge-path
+        paths:
+          - {path: services.web.image, value: overridden}
+          - {path: services.web.hostname, value: keep}
+  - id: include.long
+    feature: include
+    kind: baseline
+    description: Long-form include path
+    provenance: {source: official}
+    files: [include/long/compose.yaml, include/long/base.yaml]
+    expected:
+      engine: pending-engine
+      local:
+        assertion: include-ref
+        form: long
+        state: ok
+  - id: include.long-extras
+    feature: include
+    kind: adversarial
+    description: Long-form env_file and project_directory are not applied
+    provenance: {source: official, note: extras recorded unknown, not applied}
+    files: [include/long-extras/compose.yaml, include/long-extras/base.yaml]
+    expected:
+      engine: pending-engine
+      local:
+        assertion: include-ref
+        form: long
+        certainty: unknown
+        minUnsupported: 2
+  - id: include.multi
+    feature: include
+    kind: baseline
+    description: Multiple includes in order
+    provenance: {source: official}
+    files: [include/multi/compose.yaml, include/multi/a.yaml, include/multi/b.yaml]
+    expected:
+      engine: pending-engine
+      local:
+        assertion: include-merge-path
+        paths:
+          - {path: services.web.image, value: three}
+  - id: include.nested
+    feature: include
+    kind: baseline
+    description: Nested includes
+    provenance: {source: official}
+    files: [include/nested/compose.yaml, include/nested/mid.yaml, include/nested/inner.yaml]
+    expected:
+      engine: pending-engine
+      local:
+        assertion: include-merge-path
+        paths:
+          - {path: services.inner.image, value: alpine}
+          - {path: services.web.image, value: nginx}
+  - id: include.cycle
+    feature: include
+    kind: adversarial
+    description: Include cycle is typed, not hung
+    provenance: {source: synthetic}
+    files: [include/cycle/a.yaml, include/cycle/b.yaml]
+    entry: include/cycle/a.yaml
+    expected:
+      engine: pending-engine
+      local:
+        assertion: include-ref
+        hasCycle: true
+  - id: include.override
+    feature: include
+    kind: baseline
+    description: Including file wins over included base
+    provenance: {source: official}
+    files: [include/override/compose.yaml, include/override/base.yaml]
+    expected:
+      engine: pending-engine
+      local:
+        assertion: include-merge-path
+        paths:
+          - {path: services.web.image, value: overridden}
+
+  - id: extends.same-file
+    feature: extends
+    kind: baseline
+    description: Mapping-form same-file extends with local override
+    provenance: {source: official}
+    files: [extends/same-file/compose.yaml]
+    expected:
+      engine: pending-engine
+      local:
+        assertion: extends-field
+        paths:
+          - {path: services.cli.image, value: busybox}
+          - {path: services.cli.environment.PORT, value: "8080"}
+  - id: extends.cross-file
+    feature: extends
+    kind: baseline
+    description: Cross-file mapping-form extends
+    provenance: {source: official}
+    files: [extends/cross-file/compose.yaml, extends/cross-file/base.yaml]
+    expected:
+      engine: pending-engine
+      local:
+        assertion: extends-field
+        paths:
+          - {path: services.web.image, value: alpine}
+          - {path: services.web.hostname, value: from-file}
+  - id: extends.relationship
+    feature: extends
+    kind: baseline
+    description: Relationship keys are not inherited
+    provenance: {source: official}
+    files: [extends/relationship/compose.yaml]
+    expected:
+      engine: pending-engine
+      local:
+        assertion: extends-field
+        paths:
+          - {path: services.cli.depends_on, absentPath: true}
+  - id: extends.cycle
+    feature: extends
+    kind: adversarial
+    description: Extends cycle is typed
+    provenance: {source: synthetic}
+    files: [extends/cycle/compose.yaml]
+    expected:
+      engine: pending-engine
+      local:
+        assertion: extends-ref
+        hasCycle: true
+  - id: extends.short-form
+    feature: extends
+    kind: adversarial
+    description: String short-form extends is unsupported
+    provenance: {source: official}
+    files: [extends/short-form/compose.yaml]
+    expected:
+      engine: pending-engine
+      local:
+        assertion: extends-ref
+        service: cli
+        state: unsupported
+
+  - id: containerenv.override
+    feature: container-env
+    kind: baseline
+    description: "environment: wins over env_file"
+    provenance: {source: official, note: "live-pinned docker compose v5.4.0"}
+    files: [containerenv/override/compose.yaml, containerenv/override/a.env]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: web:COLOR, value: from-compose}
+        - {path: web:SHARED, value: file}
+      local:
+        assertion: containerenv-var
+        key: COLOR
+        value: from-compose
+        state: environment
+  - id: containerenv.order
+    feature: container-env
+    kind: baseline
+    description: Later env_file overrides earlier
+    provenance: {source: official, note: "live-pinned docker compose v5.4.0"}
+    files: [containerenv/order/compose.yaml, containerenv/order/a.env, containerenv/order/b.env]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: web:SHARED, value: from-b}
+        - {path: web:ONLY_A, value: a}
+        - {path: web:ONLY_B, value: b}
+      local:
+        assertion: containerenv-var
+        key: SHARED
+        value: from-b
+  - id: containerenv.passthrough
+    feature: container-env
+    kind: baseline
+    description: List-form KEY pass-through from host shell
+    provenance: {source: official, note: "live-pinned docker compose v5.4.0"}
+    files: [containerenv/passthrough/compose.yaml]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: web:DEBUG, value: from-shell}
+        - {path: web:COLOR, value: blue}
+      local:
+        assertion: containerenv-var
+        key: DEBUG
+        value: from-shell
+        state: host-shell
+        hostEnv: {DEBUG: from-shell}
+  - id: containerenv.multi
+    feature: container-env
+    kind: baseline
+    description: Multiple env_file sources then environment winner
+    provenance: {source: official, note: "live-pinned docker compose v5.4.0"}
+    files: [containerenv/multi/compose.yaml, containerenv/multi/a.env, containerenv/multi/b.env]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: web:COLOR, value: from-compose}
+      local:
+        assertion: containerenv-var
+        key: COLOR
+        value: from-compose
+  - id: containerenv.corpus.dotenv-vs-environment
+    feature: container-env
+    kind: baseline
+    description: "Project .env vs environment: (environment wins)"
+    provenance: {source: synthetic, note: "baseline; live-pinned docker compose v5.4.0"}
+    files: [corpus/precedence/dotenv-vs-environment/compose.yaml, corpus/precedence/dotenv-vs-environment/.env]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: web:COLOR, value: from-compose}
+        - {path: services.web.image, value: alpine}
+      local:
+        assertion: containerenv-var
+        key: COLOR
+        value: from-compose
+        state: environment
+  - id: containerenv.corpus.envfile-cli
+    feature: container-env
+    kind: baseline
+    description: --env-file replaces project .env for interpolation (PINNED lives in extra.env)
+    provenance: {source: synthetic, note: "baseline; live-pinned docker compose v5.4.0"}
+    files: [corpus/precedence/envfile-cli/compose.yaml, corpus/precedence/envfile-cli/.env, corpus/precedence/envfile-cli/extra.env]
+    envFiles: [corpus/precedence/envfile-cli/extra.env]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: services.web.hostname, value: from-extra}
+        - {path: web:PINNED, value: from-extra}
+      local:
+        assertion: interp-path-states
+        env: {PINNED: from-extra}
+        paths:
+          - {path: services.web.hostname, resolved: from-extra, state: resolved}
+          - {path: services.web.environment.PINNED, resolved: from-extra, state: resolved}
+  - id: interpolation.corpus.envfile-replaces-dotenv
+    feature: interpolation
+    kind: baseline
+    description: --env-file replaces project .env; TAG only in .env is dropped
+    provenance: {source: synthetic, note: "env-file precedence repair; live-pinned docker compose v5.4.0"}
+    files: [corpus/precedence/envfile-replaces-dotenv/compose.yaml, corpus/precedence/envfile-replaces-dotenv/.env, corpus/precedence/envfile-replaces-dotenv/extra.env]
+    envFiles: [corpus/precedence/envfile-replaces-dotenv/extra.env]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: services.web.image, value: "nginx:"}
+        - {path: services.web.hostname, value: repro-host}
+      local:
+        assertion: interp-path-states
+        env: {HOSTV: repro-host}
+        paths:
+          - {path: services.web.image, resolved: "nginx:", state: absent-empty}
+          - {path: services.web.hostname, resolved: repro-host, state: resolved}
+  - id: containerenv.corpus.list-form
+    feature: container-env
+    kind: baseline
+    description: environment list form
+    provenance: {source: synthetic, note: "baseline; live-pinned docker compose v5.4.0"}
+    files: [corpus/precedence/list-form/compose.yaml]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: web:COLOR, value: from-list}
+        - {path: web:NAME, value: web}
+      local:
+        assertion: containerenv-var
+        key: COLOR
+        value: from-list
+        state: environment
+  - id: containerenv.corpus.map-form
+    feature: container-env
+    kind: baseline
+    description: environment map form
+    provenance: {source: synthetic, note: "baseline; live-pinned docker compose v5.4.0"}
+    files: [corpus/precedence/map-form/compose.yaml]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: web:COLOR, value: from-map}
+        - {path: web:NAME, value: web}
+      local:
+        assertion: containerenv-var
+        key: COLOR
+        value: from-map
+        state: environment
+
+  - id: explain.interp-env
+    feature: explain
+    kind: baseline
+    description: Interpolation from project .env used by explain/inspect
+    provenance: {source: synthetic}
+    files: [explain/interp-env/compose.yaml, explain/interp-env/.env]
+    expected:
+      engine: pending-engine
+      local: {assertion: parse-ok, entry: explain/interp-env/compose.yaml}
+  - id: explain.extends-merge
+    feature: explain
+    kind: baseline
+    description: Extends then merge overlay for explain
+    provenance: {source: synthetic}
+    files: [explain/extends-merge/compose.yaml, explain/extends-merge/overlay.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: parse-ok, entry: explain/extends-merge/compose.yaml}
+  - id: explain.profiles
+    feature: explain
+    kind: baseline
+    description: Profiled service for explain
+    provenance: {source: synthetic}
+    files: [explain/profiles/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: parse-ok}
+  - id: explain.absent
+    feature: explain
+    kind: baseline
+    description: Present service; missing targets are typed absent by explain
+    provenance: {source: synthetic}
+    files: [explain/absent/compose.yaml]
+    expected:
+      engine: pending-engine
+      local:
+        assertion: parse-services
+        services: [web]
+
+  - id: diff.profiles
+    feature: diff
+    kind: baseline
+    description: Profile enable/disable delta
+    provenance: {source: synthetic}
+    files: [diff/profiles/compose.yaml]
+    expected:
+      engine: pending-engine
+      local:
+        assertion: parse-services
+        services: [web, debug]
+  - id: diff.env-source
+    feature: diff
+    kind: baseline
+    description: Container-env winner differs by env-file selection
+    provenance: {source: synthetic}
+    files:
+      - diff/env-source/compose.yaml
+      - diff/env-source/left.env
+      - diff/env-source/right.env
+      - diff/env-source/left.interp.env
+      - diff/env-source/right.interp.env
+    expected:
+      engine: pending-engine
+      local: {assertion: parse-ok, entry: diff/env-source/compose.yaml}
+
+  - id: check.clean
+    feature: check
+    kind: baseline
+    description: No findings
+    provenance: {source: synthetic}
+    files: [check/clean/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: check-ids, project: check/clean, checkIds: []}
+  - id: check.secret-inline
+    feature: secret-safety
+    kind: security
+    description: CHK01 inline secret-keyed value (demo, not a live token)
+    provenance: {source: synthetic}
+    rationale:
+      type: docs
+      ref: https://cwe.mitre.org/data/definitions/798.html
+      section: Use of Hard-coded Credentials
+    files: [check/secret-inline/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: check-ids, project: check/secret-inline, checkIds: [CHK01]}
+  - id: check.inline-default
+    feature: secret-safety
+    kind: security
+    description: CHK01 fires for a secret-keyed interpolation default that becomes the effective value
+    provenance: {source: synthetic}
+    rationale:
+      type: docs
+      ref: https://cwe.mitre.org/data/definitions/798.html
+      section: Use of Hard-coded Credentials
+    files: [check/inline-default/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: check-ids, project: check/inline-default, checkIds: [CHK01]}
+  - id: check.overlay-win
+    feature: secret-safety
+    kind: security
+    description: CHK01 fires for a winning overlay literal (catalog lists files; overlay is loaded by tests/CLI, not check-ids which reads compose.yaml only)
+    provenance: {source: synthetic}
+    rationale:
+      type: docs
+      ref: https://cwe.mitre.org/data/definitions/798.html
+      section: Use of Hard-coded Credentials
+    files: [check/overlay-win/compose.yaml, check/overlay-win/overlay.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: files-exist}
+  - id: check.external-ref
+    feature: check
+    kind: regression
+    description: CHK01 does not fire for an external ${SECRET_ENV} reference
+    provenance: {source: synthetic}
+    files: [check/external-ref/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: check-ids, project: check/external-ref, checkIds: []}
+  - id: check.nonsecret-default
+    feature: check
+    kind: regression
+    description: CHK01 does not fire for a non-secret interpolation default
+    provenance: {source: synthetic}
+    files: [check/nonsecret-default/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: check-ids, project: check/nonsecret-default, checkIds: []}
+  - id: check.required-unset
+    feature: check
+    kind: regression
+    description: CHK02 required interpolation unset
+    provenance: {source: synthetic}
+    files: [check/required-unset/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: check-ids, project: check/required-unset, checkIds: [CHK02]}
+  - id: check.profiled-dep
+    feature: check
+    kind: regression
+    description: CHK03 profiled dependency gap
+    provenance: {source: synthetic}
+    files: [check/profiled-dep/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: check-ids, project: check/profiled-dep, checkIds: [CHK03]}
+  - id: check.missing-include
+    feature: check
+    kind: regression
+    description: CHK04 missing include target
+    provenance: {source: synthetic}
+    files: [check/missing-include/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: check-ids, project: check/missing-include, checkIds: [CHK04]}
+  - id: check.missing-extends
+    feature: check
+    kind: regression
+    description: CHK04 missing extends target
+    provenance: {source: synthetic}
+    files: [check/missing-extends/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: check-ids, project: check/missing-extends, checkIds: [CHK04]}
+  - id: check.env-shadowing
+    feature: check
+    kind: baseline
+    description: CHK05 container-env shadowing
+    provenance: {source: synthetic}
+    files: [check/env-shadowing/compose.yaml, check/env-shadowing/a.env]
+    expected:
+      engine: pending-engine
+      local: {assertion: check-ids, project: check/env-shadowing, checkIds: [CHK05]}
+
+  - id: graph.shadow-chain
+    feature: graph
+    kind: baseline
+    description: Multi-stage shadow-chain for explain --all
+    provenance: {source: synthetic}
+    files:
+      - graph/shadow-chain/compose.yaml
+      - graph/shadow-chain/.env
+      - graph/shadow-chain/extra.env
+      - graph/shadow-chain/overlay.env
+    expected:
+      engine: pending-engine
+      local:
+        assertion: parse-services
+        services: [web, worker]
+
+  - id: normalize.ports.short
+    feature: normalization
+    kind: baseline
+    description: Ports short syntax canonicalizes equal to long
+    provenance: {source: official}
+    files: [normalize/ports/short/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: normalize-equal, compare: normalize/ports/long, family: ports}
+  - id: normalize.ports.long
+    feature: normalization
+    kind: baseline
+    description: Ports long syntax
+    provenance: {source: official}
+    files: [normalize/ports/long/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: parse-ok}
+  - id: normalize.ports.unequal
+    feature: normalization
+    kind: baseline
+    description: Different published port stays distinct
+    provenance: {source: synthetic}
+    files: [normalize/ports/unequal/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: normalize-unequal, compare: normalize/ports/short, family: ports}
+  - id: normalize.ports.unknown-extra
+    feature: normalization
+    kind: adversarial
+    description: Extra long-form port key is unknown, not guessed equal
+    provenance: {source: synthetic}
+    files: [normalize/ports/unknown-extra/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: normalize-unknown}
+  - id: normalize.volumes.short
+    feature: normalization
+    kind: baseline
+    description: Volumes short syntax equals long bind/volume
+    provenance: {source: official}
+    files: [normalize/volumes/short/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: normalize-equal, compare: normalize/volumes/long, family: volumes}
+  - id: normalize.volumes.long
+    feature: normalization
+    kind: baseline
+    description: Volumes long syntax
+    provenance: {source: official}
+    files: [normalize/volumes/long/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: parse-ok}
+  - id: normalize.volumes.unequal
+    feature: normalization
+    kind: baseline
+    description: rw bind does not equal ro bind
+    provenance: {source: synthetic}
+    files: [normalize/volumes/unequal/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: normalize-unequal, compare: normalize/volumes/short, family: volumes}
+  - id: normalize.labels.list
+    feature: normalization
+    kind: baseline
+    description: Labels list equals map
+    provenance: {source: official}
+    files: [normalize/labels/list/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: normalize-equal, compare: normalize/labels/map, family: labels}
+  - id: normalize.labels.map
+    feature: normalization
+    kind: baseline
+    description: Labels map form
+    provenance: {source: official}
+    files: [normalize/labels/map/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: parse-ok}
+  - id: normalize.labels.unequal
+    feature: normalization
+    kind: baseline
+    description: Different label value stays distinct
+    provenance: {source: synthetic}
+    files: [normalize/labels/unequal/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: normalize-unequal, compare: normalize/labels/list, family: labels}
+  - id: normalize.command.exec-flow
+    feature: normalization
+    kind: baseline
+    description: Exec flow list equals exec block list
+    provenance: {source: official}
+    files: [normalize/command/exec-flow/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: normalize-equal, compare: normalize/command/exec-block, family: command}
+  - id: normalize.command.exec-block
+    feature: normalization
+    kind: baseline
+    description: Exec block list
+    provenance: {source: official}
+    files: [normalize/command/exec-block/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: parse-ok}
+  - id: normalize.command.shell
+    feature: normalization
+    kind: adversarial
+    description: Shell command does not equal exec list
+    provenance: {source: official, note: Compose shell vs exec distinction}
+    files: [normalize/command/shell/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: normalize-unequal, compare: normalize/command/exec-flow, family: command}
+  - id: normalize.healthcheck.string
+    feature: normalization
+    kind: baseline
+    description: healthcheck.test string equals CMD-SHELL list
+    provenance: {source: official}
+    files: [normalize/healthcheck/string/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: normalize-equal, compare: normalize/healthcheck/cmd-shell, family: healthcheck.test}
+  - id: normalize.healthcheck.cmd-shell
+    feature: normalization
+    kind: baseline
+    description: CMD-SHELL list form
+    provenance: {source: official}
+    files: [normalize/healthcheck/cmd-shell/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: parse-ok}
+  - id: normalize.healthcheck.cmd
+    feature: normalization
+    kind: adversarial
+    description: CMD exec form is not equal to string/CMD-SHELL
+    provenance: {source: official}
+    files: [normalize/healthcheck/cmd/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: normalize-unequal, compare: normalize/healthcheck/string, family: healthcheck.test}
+
+  # Regression corpus — live-pinned v5.4.0; rationale URLs verified (compose-spec / official docs only)
+  - id: merge.regression.ports-append-dedup
+    feature: merge
+    kind: regression
+    description: Ports append with unique-key dedup (same 8080:80 is not duplicated)
+    provenance: {source: synthetic, note: "regression guard; live-pinned docker compose v5.4.0"}
+    rationale:
+      type: compose-spec
+      ref: https://github.com/compose-spec/compose-spec/blob/main/13-merge.md#unique-resources
+      section: Unique resources
+    files: [regression/merge-ports/compose.yaml, regression/merge-ports/overlay.yaml]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: services.web.image, value: alpine}
+        - {path: services.web.ports, value: "published=8080 target=80 protocol=tcp mode=ingress; published=9090 target=80 protocol=tcp mode=ingress; published=9191 target=90 protocol=tcp mode=ingress"}
+      local:
+        assertion: merge-path-equals
+        paths:
+          - {path: services.web.image, value: alpine}
+          - {path: services.web.ports, value: "[8080:80, 9090:80, 9191:90]"}
+  - id: merge.regression.dns-append
+    feature: merge
+    kind: regression
+    description: General sequence dns is appended (not replaced)
+    provenance: {source: synthetic, note: "regression guard; live-pinned docker compose v5.4.0"}
+    rationale:
+      type: compose-spec
+      ref: https://github.com/compose-spec/compose-spec/blob/main/13-merge.md#sequence
+      section: Sequence
+    files: [regression/merge-dns/compose.yaml, regression/merge-dns/overlay.yaml]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: services.web.image, value: alpine}
+        - {path: services.web.dns, value: "[1.1.1.1, 8.8.8.8]"}
+      local:
+        assertion: merge-path-equals
+        paths:
+          - {path: services.web.dns, value: "[1.1.1.1, 8.8.8.8]"}
+  - id: merge.regression.command-replace
+    feature: merge
+    kind: regression
+    description: command and entrypoint are atomically replaced by the later file
+    provenance: {source: synthetic, note: "regression guard; live-pinned docker compose v5.4.0"}
+    rationale:
+      type: compose-spec
+      ref: https://github.com/compose-spec/compose-spec/blob/main/13-merge.md#shell-commands
+      section: Shell commands
+    files: [regression/merge-command/compose.yaml, regression/merge-command/overlay.yaml]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: services.web.image, value: alpine}
+        - {path: services.web.command, value: "form=exec argv=[echo, over]"}
+        - {path: services.web.entrypoint, value: "form=exec argv=[echo, over-entry]"}
+      local:
+        assertion: merge-path-equals
+        paths:
+          - {path: services.web.command, value: "[echo, over]"}
+          - {path: services.web.entrypoint, value: "[echo, over-entry]"}
+  - id: interpolation.regression.escape
+    feature: interpolation
+    kind: regression
+    description: "$$VAR / $${notavar} / pre-$$HOME-post become runtime $VAR / ${notavar} / pre-$HOME-post"
+    provenance: {source: synthetic, note: "escaped-literal guard; live-pinned docker compose v5.4.0"}
+    rationale:
+      type: compose-spec
+      ref: https://github.com/compose-spec/compose-spec/blob/main/12-interpolation.md
+      section: Interpolation ($$ literal dollar)
+    files: [regression/escape/compose.yaml]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: web:LITERAL, value: "$VAR"}
+        - {path: web:LITERAL_BRACED, value: "${notavar}"}
+        - {path: web:MIXED, value: "pre-$HOME-post"}
+      local:
+        assertion: interp-path-states
+        paths:
+          - {path: services.web.environment.LITERAL, resolved: "$VAR", state: escaped-literal}
+          - {path: services.web.environment.LITERAL_BRACED, resolved: "${notavar}", state: escaped-literal}
+          - {path: services.web.environment.MIXED, resolved: "pre-$HOME-post", state: escaped-literal}
+  - id: interpolation.regression.colon-dash
+    feature: interpolation
+    kind: regression
+    description: "${VAR:-default} vs ${VAR-default} (empty vs unset)"
+    provenance: {source: synthetic, note: "live-pinned docker compose v5.4.0"}
+    rationale:
+      type: compose-spec
+      ref: https://github.com/compose-spec/compose-spec/blob/main/12-interpolation.md
+      section: Interpolation default values
+    files: [regression/colon-dash/compose.yaml, regression/colon-dash/.env]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: web:COLON_EMPTY, value: fallback}
+        - {path: web:COLON_UNSET, value: fallback}
+        - {path: web:DASH_EMPTY, value: xx}
+        - {path: web:DASH_UNSET, value: fallback}
+        - {path: web:COLON_SET, value: kept}
+        - {path: web:DASH_SET, value: kept}
+      local:
+        assertion: interp-path-states
+        env: {EMPTY: "", SET: kept}
+        paths:
+          - {path: services.web.environment.COLON_EMPTY, resolved: fallback, state: defaulted}
+          - {path: services.web.environment.COLON_UNSET, resolved: fallback, state: defaulted}
+          - {path: services.web.environment.DASH_EMPTY, resolved: xx, state: resolved}
+          - {path: services.web.environment.DASH_UNSET, resolved: fallback, state: defaulted}
+          - {path: services.web.environment.COLON_SET, resolved: kept, state: resolved}
+          - {path: services.web.environment.DASH_SET, resolved: kept, state: resolved}
+  - id: interpolation.regression.plus-alt
+    feature: interpolation
+    kind: regression
+    description: "${VAR:+alt} vs ${VAR+alt}"
+    provenance: {source: synthetic, note: "live-pinned docker compose v5.4.0"}
+    rationale:
+      type: docs
+      ref: https://docs.docker.com/reference/compose-file/interpolation/
+      section: Alternative value
+    files: [regression/plus-alt/compose.yaml, regression/plus-alt/.env]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: web:COLON_SET, value: "yes"}
+        - {path: web:COLON_EMPTY, value: xx}
+        - {path: web:COLON_UNSET, value: xx}
+        - {path: web:PLUS_SET, value: "yes"}
+        - {path: web:PLUS_EMPTY, value: "yes"}
+        - {path: web:PLUS_UNSET, value: xx}
+      local:
+        assertion: interp-path-states
+        env: {FLAG: on, EMPTY: ""}
+        paths:
+          - {path: services.web.environment.COLON_SET, resolved: "yes", state: resolved}
+          - {path: services.web.environment.COLON_EMPTY, resolved: xx, state: absent-empty}
+          - {path: services.web.environment.PLUS_EMPTY, resolved: "yes", state: resolved}
+  - id: interpolation.regression.required-ok
+    feature: interpolation
+    kind: regression
+    description: "${VAR:?err} when set; ${VAR?err} when empty (empty is ok for ?)"
+    provenance: {source: synthetic, note: "live-pinned docker compose v5.4.0"}
+    rationale:
+      type: compose-spec
+      ref: https://github.com/compose-spec/compose-spec/blob/main/12-interpolation.md
+      section: Interpolation mandatory variables
+    files: [regression/required-ok/compose.yaml, regression/required-ok/.env]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: web:REQUIRED, value: present}
+        - {path: web:OPTIONAL, value: ab}
+      local:
+        assertion: interp-path-states
+        env: {MUST: present, MAYBE: ""}
+        paths:
+          - {path: services.web.environment.REQUIRED, resolved: present, state: resolved}
+          - {path: services.web.environment.OPTIONAL, resolved: ab, state: resolved}
+  - id: interpolation.regression.required-unset
+    feature: interpolation
+    kind: regression
+    description: "${VAR:?err} unset is an engine error (ComposeLens reports required-error, does not fabricate config)"
+    provenance: {source: synthetic, note: "live-pinned docker compose v5.4.0"}
+    rationale:
+      type: compose-spec
+      ref: https://github.com/compose-spec/compose-spec/blob/main/12-interpolation.md
+      section: Interpolation mandatory variables
+    files: [regression/required-unset/compose.yaml]
+    expected:
+      engine: engine-error
+      enginePin: v5.4.0
+      local:
+        assertion: interp-path-states
+        paths:
+          - {path: services.web.environment.REQUIRED, resolved: "", state: required-error}
+  - id: interpolation.regression.nested-default
+    feature: interpolation
+    kind: regression
+    description: "Nested default — ${MISSING:-$OTHER} expands OTHER, as the engine does"
+    provenance: {source: synthetic, note: "nested default; live-pinned docker compose v5.4.0"}
+    rationale:
+      type: compose-spec
+      ref: https://github.com/compose-spec/compose-spec/blob/main/12-interpolation.md
+      section: Interpolation can also be nested
+    files: [regression/nested-default/compose.yaml, regression/nested-default/.env]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: web:NESTED, value: other-value}
+      local:
+        assertion: interp-path-states
+        env: {OTHER: other-value}
+        paths:
+          - {path: services.web.environment.NESTED, resolved: other-value, state: defaulted}
+  - id: container-env.regression.environment-over-envfile
+    feature: container-env
+    kind: regression
+    description: "environment: wins over env_file"
+    provenance: {source: synthetic, note: "live-pinned docker compose v5.4.0"}
+    rationale:
+      type: docs
+      ref: https://docs.docker.com/reference/compose-file/services/#env_file
+      section: "When both env_file and environment are set, environment has precedence"
+    files: [regression/env-over-envfile/compose.yaml, regression/env-over-envfile/a.env]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: web:COLOR, value: from-compose}
+        - {path: web:SHARED, value: file}
+      local:
+        assertion: containerenv-var
+        key: COLOR
+        value: from-compose
+        state: environment
+  - id: container-env.regression.envfile-later-wins
+    feature: container-env
+    kind: regression
+    description: Later env_file in the list overrides earlier for the same key
+    provenance: {source: synthetic, note: "live-pinned docker compose v5.4.0"}
+    rationale:
+      type: docs
+      ref: https://docs.docker.com/reference/compose-file/services/#env_file
+      section: env_file list processed top down
+    files: [regression/envfile-later/compose.yaml, regression/envfile-later/a.env, regression/envfile-later/b.env]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: web:SHARED, value: from-b}
+        - {path: web:ONLY_A, value: a}
+        - {path: web:ONLY_B, value: b}
+      local:
+        assertion: containerenv-var
+        key: SHARED
+        value: from-b
+        state: env-file
+  - id: container-env.regression.cli-env-file
+    feature: container-env
+    kind: regression
+    description: CLI --env-file replaces project .env for interpolation
+    provenance: {source: synthetic, note: "live-pinned docker compose v5.4.0"}
+    rationale:
+      type: docs
+      ref: https://docs.docker.com/compose/how-tos/environment-variables/envvars-precedence/
+      section: interpolated from shell or --env-file
+    files: [regression/cli-env-file/compose.yaml, regression/cli-env-file/.env, regression/cli-env-file/extra.env]
+    envFiles: [regression/cli-env-file/extra.env]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: services.web.hostname, value: from-extra}
+        - {path: web:PINNED, value: from-extra}
+      local:
+        assertion: interp-path-states
+        env: {PINNED: from-extra}
+        paths:
+          - {path: services.web.hostname, resolved: from-extra, state: resolved}
+          - {path: services.web.environment.PINNED, resolved: from-extra, state: resolved}
+
+  # Platform corpus — live-pinned v5.4.0; rationale URLs verified (compose-spec / official docs only)
+  - id: platform.paths.drive-backslash
+    feature: paths
+    kind: platform
+    description: Windows drive-letter backslash bind source C:\Windows:/in
+    provenance: {source: synthetic, note: "platform; live-pinned docker compose v5.4.0"}
+    rationale:
+      type: docs
+      ref: https://docs.docker.com/reference/compose-file/services/#volumes
+      section: Short syntax VOLUME:CONTAINER_PATH bind mounts
+    files: [platform/paths-drive-backslash/compose.yaml]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: services.web.image, value: alpine}
+        - {path: services.web.volumes, value: 'type=bind source=C:\Windows target=/in{optional: create_host_path=true}'}
+      local: {assertion: parse-ok}
+  - id: platform.paths.forward-slash
+    feature: paths
+    kind: platform
+    description: Windows drive-letter forward-slash bind source C:/Windows:/in
+    provenance: {source: synthetic, note: "platform; live-pinned docker compose v5.4.0"}
+    rationale:
+      type: docs
+      ref: https://docs.docker.com/reference/compose-file/services/#volumes
+      section: Short syntax VOLUME:CONTAINER_PATH bind mounts
+    files: [platform/paths-forward-slash/compose.yaml]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: services.web.image, value: alpine}
+        - {path: services.web.volumes, value: 'type=bind source=C:/Windows target=/in{optional: create_host_path=true}'}
+      local: {assertion: parse-ok}
+  - id: platform.paths.rel-backslash
+    feature: paths
+    kind: platform
+    description: "Relative bind source with backslash .\\rel:/in"
+    provenance: {source: synthetic, note: "platform; live-pinned docker compose v5.4.0"}
+    rationale:
+      type: docs
+      ref: https://docs.docker.com/reference/compose-file/services/#volumes
+      section: Relative host paths begin with . or ..
+    files: [platform/paths-rel-backslash/compose.yaml]
+    expected:
+      engine: divergent
+      enginePin: v5.4.0
+      engineFields:
+        - {path: services.web.image, value: alpine}
+        - path: services.web.volumes
+          value: 'type=bind source={project}\rel target=/in{optional: create_host_path=true}'
+          posixValue: 'type=bind source={project}/.\rel target=/in{optional: create_host_path=true}'
+      local: {assertion: parse-ok}
+  - id: platform.paths.rel-slash
+    feature: paths
+    kind: platform
+    description: Relative bind source with forward slash ./rel:/in
+    provenance: {source: synthetic, note: "platform; live-pinned docker compose v5.4.0"}
+    rationale:
+      type: docs
+      ref: https://docs.docker.com/reference/compose-file/services/#volumes
+      section: Relative host paths begin with . or ..
+    files: [platform/paths-rel-slash/compose.yaml]
+    expected:
+      engine: divergent
+      enginePin: v5.4.0
+      engineFields:
+        - {path: services.web.image, value: alpine}
+        - {path: services.web.volumes, value: 'type=bind source={project}{sep}rel target=/in{optional: create_host_path=true}'}
+      local: {assertion: parse-ok}
+  - id: platform.paths.spaces
+    feature: paths
+    kind: platform
+    description: Quoted bind source with a space in the host path
+    provenance: {source: synthetic, note: "platform; live-pinned docker compose v5.4.0"}
+    rationale:
+      type: docs
+      ref: https://docs.docker.com/reference/compose-file/services/#volumes
+      section: Short syntax VOLUME:CONTAINER_PATH bind mounts
+    files: [platform/paths-spaces/compose.yaml]
+    expected:
+      engine: divergent
+      enginePin: v5.4.0
+      engineFields:
+        - {path: services.web.image, value: alpine}
+        - {path: services.web.volumes, value: 'type=bind source={project}{sep}my data target=/in{optional: create_host_path=true}'}
+      local: {assertion: parse-ok}
+  - id: platform.newline.crlf
+    feature: interpolation
+    kind: platform
+    description: Same compose + .env as LF sibling, written with CRLF line endings
+    provenance: {source: synthetic, note: "platform; live-pinned docker compose v5.4.0"}
+    rationale:
+      type: docs
+      ref: https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/
+      section: ".env file in the project directory interpolates Compose values"
+    files: [platform/newline-crlf/compose.yaml, platform/newline-crlf/.env]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: services.web.image, value: alpine}
+        - {path: services.web.hostname, value: winhost}
+        - {path: web:PINNED, value: from-env}
+      local:
+        assertion: interp-path-states
+        env: {PLATFORM_HOST: winhost, PLATFORM_PINNED: from-env}
+        paths:
+          - {path: services.web.hostname, resolved: winhost, state: resolved}
+          - {path: services.web.environment.PINNED, resolved: from-env, state: resolved}
+  - id: platform.newline.lf
+    feature: interpolation
+    kind: platform
+    description: Same compose + .env as CRLF sibling, written with LF line endings
+    provenance: {source: synthetic, note: "platform; live-pinned docker compose v5.4.0"}
+    rationale:
+      type: docs
+      ref: https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/
+      section: ".env file in the project directory interpolates Compose values"
+    files: [platform/newline-lf/compose.yaml, platform/newline-lf/.env]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: services.web.image, value: alpine}
+        - {path: services.web.hostname, value: winhost}
+        - {path: web:PINNED, value: from-env}
+      local:
+        assertion: interp-path-states
+        env: {PLATFORM_HOST: winhost, PLATFORM_PINNED: from-env}
+        paths:
+          - {path: services.web.hostname, resolved: winhost, state: resolved}
+          - {path: services.web.environment.PINNED, resolved: from-env, state: resolved}
+  - id: platform.encoding.utf8
+    feature: interpolation
+    kind: platform
+    description: UTF-8 compose.yaml and .env without BOM
+    provenance: {source: synthetic, note: "platform; live-pinned docker compose v5.4.0"}
+    rationale:
+      type: docs
+      ref: https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/
+      section: ".env file syntax key-value pairs"
+    files: [platform/encoding-utf8/compose.yaml, platform/encoding-utf8/.env]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: services.web.image, value: alpine}
+        - {path: services.web.hostname, value: winhost}
+        - {path: web:PINNED, value: from-env}
+      local:
+        assertion: interp-path-states
+        env: {PLATFORM_HOST: winhost, PLATFORM_PINNED: from-env}
+        paths:
+          - {path: services.web.hostname, resolved: winhost, state: resolved}
+          - {path: services.web.environment.PINNED, resolved: from-env, state: resolved}
+  - id: platform.encoding.utf8-bom
+    feature: interpolation
+    kind: platform
+    description: UTF-8 BOM on both compose.yaml and .env (first-key BOM is a legitimate divergence)
+    provenance: {source: synthetic, note: "platform; live-pinned docker compose v5.4.0"}
+    rationale:
+      type: docs
+      ref: https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/
+      section: ".env file syntax key-value pairs"
+    files: [platform/encoding-utf8-bom/compose.yaml, platform/encoding-utf8-bom/.env]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: services.web.image, value: alpine}
+        - {path: services.web.hostname, value: winhost}
+        - {path: web:PINNED, value: from-env}
+      local:
+        assertion: interp-path-states
+        env: {PLATFORM_HOST: winhost, PLATFORM_PINNED: from-env}
+        paths:
+          - {path: services.web.hostname, resolved: winhost, state: resolved}
+          - {path: services.web.environment.PINNED, resolved: from-env, state: resolved}
+  - id: platform.shell.exec
+    feature: normalization
+    kind: platform
+    description: Exec-form command and entrypoint lists
+    provenance: {source: synthetic, note: "platform; live-pinned docker compose v5.4.0"}
+    rationale:
+      type: docs
+      ref: https://docs.docker.com/reference/compose-file/services/#command
+      section: command list is exec-form like Dockerfile
+    files: [platform/shell-exec/compose.yaml]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: services.web.image, value: alpine}
+        - {path: services.web.command, value: "form=exec argv=[echo, ok]"}
+        - {path: services.web.entrypoint, value: "form=exec argv=[echo, entry]"}
+      local: {assertion: parse-ok}
+  - id: platform.shell.shell-form
+    feature: normalization
+    kind: platform
+    description: Shell-form command and entrypoint strings vs engine rendering
+    provenance: {source: synthetic, note: "platform; live-pinned docker compose v5.4.0"}
+    rationale:
+      type: docs
+      ref: https://docs.docker.com/reference/compose-file/services/#command
+      section: string command does not auto-run in image SHELL
+    files: [platform/shell-form/compose.yaml]
+    expected:
+      engine: divergent
+      enginePin: v5.4.0
+      engineFields:
+        - {path: services.web.image, value: alpine}
+        - {path: services.web.command, value: "form=exec argv=[echo, ok]"}
+        - {path: services.web.entrypoint, value: "form=exec argv=[echo, entry]"}
+      local: {assertion: parse-ok}
+  - id: platform.shell.windows-content
+    feature: normalization
+    kind: platform
+    description: Exec-form command/entrypoint containing Windows-style path content
+    provenance: {source: synthetic, note: "platform; live-pinned docker compose v5.4.0"}
+    rationale:
+      type: docs
+      ref: https://docs.docker.com/reference/compose-file/services/#command
+      section: command list is exec-form like Dockerfile
+    files: [platform/shell-windows-content/compose.yaml]
+    expected:
+      engine: matched
+      enginePin: v5.4.0
+      engineFields:
+        - {path: services.web.image, value: alpine}
+        - {path: services.web.command, value: 'form=exec argv=[echo, C:\Windows]'}
+        - {path: services.web.entrypoint, value: 'form=exec argv=[C:\Windows\System32\cmd.exe]'}
+      local: {assertion: parse-ok}
+
+  # Parser hardening — adversarial battery (local assertion files-exist / parse-ok; typed parse outcomes in go test)
+  - id: parser.adversarial.deep-nest
+    feature: yaml
+    kind: adversarial
+    description: YAML nesting deeper than the parser bound is refused
+    provenance: {source: adversarial, note: "parser hardening"}
+    files: [parser/deep-nest/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: files-exist}
+  - id: parser.adversarial.alias-bomb
+    feature: yaml
+    kind: adversarial
+    description: Exponential YAML alias expansion is refused
+    provenance: {source: adversarial, note: "parser hardening"}
+    files: [parser/alias-bomb/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: files-exist}
+  - id: parser.adversarial.malformed
+    feature: yaml
+    kind: adversarial
+    description: Truncated YAML returns a typed malformed diagnostic
+    provenance: {source: adversarial, note: "parser hardening"}
+    files: [parser/malformed/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: files-exist}
+  - id: parser.adversarial.bad-encoding
+    feature: yaml
+    kind: adversarial
+    description: Invalid UTF-8 is refused as invalid-encoding
+    provenance: {source: adversarial, note: "parser hardening"}
+    files: [parser/bad-encoding/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: files-exist}
+  - id: parser.adversarial.duplicate-key
+    feature: yaml
+    kind: adversarial
+    description: Duplicate mapping keys are refused
+    provenance: {source: adversarial, note: "parser hardening"}
+    files: [parser/duplicate-key/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: files-exist}
+  - id: parser.adversarial.not-mapping
+    feature: yaml
+    kind: adversarial
+    description: Non-mapping top-level YAML is refused
+    provenance: {source: adversarial, note: "parser hardening"}
+    files: [parser/not-mapping/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: files-exist}
+  - id: parser.valid.near-bound-depth
+    feature: yaml
+    kind: baseline
+    description: Valid YAML nested under the depth bound still parses
+    provenance: {source: synthetic, note: "parser hardening near-bound"}
+    files: [parser/near-bound-depth/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: parse-ok}
+
+  # Privacy/security corpus — catalog structure only; live secret probes are in-process
+  - id: security.secret.environment-map
+    feature: secret-safety
+    kind: security
+    description: Environment map field (demo placeholder; ghp_/gho_/AWS/URL/keyed/high-entropy probes in-process)
+    provenance: {source: synthetic, note: "secret battery structure"}
+    rationale:
+      type: docs
+      ref: https://cwe.mitre.org/data/definitions/798.html
+      section: Use of Hard-coded Credentials
+    files: [security/secret/environment-map/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: parse-ok}
+  - id: security.secret.environment-list
+    feature: secret-safety
+    kind: security
+    description: Environment list field (demo placeholder; live probes in-process)
+    provenance: {source: synthetic, note: "secret battery structure"}
+    rationale:
+      type: docs
+      ref: https://cwe.mitre.org/data/definitions/798.html
+      section: Use of Hard-coded Credentials
+    files: [security/secret/environment-list/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: parse-ok}
+  - id: security.secret.labels
+    feature: secret-safety
+    kind: security
+    description: Labels field (demo placeholder; live probes in-process)
+    provenance: {source: synthetic, note: "secret battery structure"}
+    rationale:
+      type: docs
+      ref: https://cwe.mitre.org/data/definitions/798.html
+      section: Use of Hard-coded Credentials
+    files: [security/secret/labels/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: parse-ok}
+  - id: security.secret.command
+    feature: secret-safety
+    kind: security
+    description: Command args field (demo placeholder; live probes in-process)
+    provenance: {source: synthetic, note: "secret battery structure"}
+    rationale:
+      type: docs
+      ref: https://cwe.mitre.org/data/definitions/798.html
+      section: Use of Hard-coded Credentials
+    files: [security/secret/command/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: parse-ok}
+  - id: security.secret.entrypoint
+    feature: secret-safety
+    kind: security
+    description: Entrypoint args field (demo placeholder; live probes in-process)
+    provenance: {source: synthetic, note: "secret battery structure"}
+    rationale:
+      type: docs
+      ref: https://cwe.mitre.org/data/definitions/798.html
+      section: Use of Hard-coded Credentials
+    files: [security/secret/entrypoint/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: parse-ok}
+  - id: security.secret.image
+    feature: secret-safety
+    kind: security
+    description: Image field (demo alpine; live secret-shaped image refs in-process)
+    provenance: {source: synthetic, note: "secret battery structure"}
+    rationale:
+      type: docs
+      ref: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
+      section: About personal access tokens
+    files: [security/secret/image/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: parse-ok}
+  - id: security.secret.volumes
+    feature: secret-safety
+    kind: security
+    description: Volumes field (demo bind; live secret-shaped sources in-process)
+    provenance: {source: synthetic, note: "secret battery structure"}
+    rationale:
+      type: docs
+      ref: https://cwe.mitre.org/data/definitions/798.html
+      section: Use of Hard-coded Credentials
+    files: [security/secret/volumes/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: parse-ok}
+  - id: security.secret.build-args
+    feature: secret-safety
+    kind: security
+    description: Build args field (demo placeholder; live probes in-process)
+    provenance: {source: synthetic, note: "secret battery structure"}
+    rationale:
+      type: docs
+      ref: https://cwe.mitre.org/data/definitions/798.html
+      section: Use of Hard-coded Credentials
+    files: [security/secret/build-args/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: parse-ok}
+  - id: security.secret.aws-keys
+    feature: secret-safety
+    kind: security
+    description: AWS access-key ID + secret key names (demo placeholders; AKIA probes in-process)
+    provenance: {source: synthetic, note: "secret battery structure"}
+    rationale:
+      type: docs
+      ref: https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_identifiers.html
+      section: Understanding unique ID prefixes — AKIA Access key
+    files: [security/secret/aws-keys/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: parse-ok}
+  - id: security.secret.url-userinfo
+    feature: secret-safety
+    kind: security
+    description: URL userinfo credentials (demo URL without userinfo; live user:pass@host in-process)
+    provenance: {source: synthetic, note: "secret battery structure"}
+    rationale:
+      type: docs
+      ref: https://cwe.mitre.org/data/definitions/798.html
+      section: Use of Hard-coded Credentials
+    files: [security/secret/url-userinfo/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: parse-ok}
+  - id: security.secret.keyed
+    feature: secret-safety
+    kind: security
+    description: Key-based PASSWORD/TOKEN/SECRET/API_KEY (demo placeholders; live values in-process)
+    provenance: {source: synthetic, note: "secret battery structure"}
+    rationale:
+      type: docs
+      ref: https://cwe.mitre.org/data/definitions/798.html
+      section: Use of Hard-coded Credentials
+    files: [security/secret/keyed/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: parse-ok}
+  - id: security.secret.high-entropy
+    feature: secret-safety
+    kind: security
+    description: High-entropy token in a benign key (ordinary catalog value; live token in-process)
+    provenance: {source: synthetic, note: "secret battery structure"}
+    rationale:
+      type: docs
+      ref: https://cwe.mitre.org/data/definitions/798.html
+      section: Use of Hard-coded Credentials
+    files: [security/secret/high-entropy/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: parse-ok}
+  - id: security.secret.path-embedded
+    feature: secret-safety
+    kind: security
+    description: Secret embedded in a path (demo bind; live ghp_ path segment in-process)
+    provenance: {source: synthetic, note: "secret battery structure"}
+    rationale:
+      type: docs
+      ref: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
+      section: About personal access tokens
+    files: [security/secret/path-embedded/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: parse-ok}
+
+  - id: security.inert.html-script
+    feature: active-content
+    kind: security
+    description: HTML / script-looking values must stay inert on existing output surfaces
+    provenance: {source: adversarial, note: "active-content battery"}
+    rationale:
+      type: docs
+      ref: https://cwe.mitre.org/data/definitions/79.html
+      section: Improper Neutralization of Input During Web Page Generation (Cross-site Scripting)
+    files: [security/inert/html-script/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: parse-ok}
+  - id: security.inert.ansi
+    feature: active-content
+    kind: security
+    description: ANSI / terminal escape sequences must be neutralized in text output
+    provenance: {source: adversarial, note: "active-content battery"}
+    rationale:
+      type: docs
+      ref: https://cwe.mitre.org/data/definitions/150.html
+      section: Improper Neutralization of Escape, Meta, or Control Sequences
+    files: [security/inert/ansi/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: parse-ok}
+  - id: security.inert.json-yaml-meta
+    feature: active-content
+    kind: security
+    description: JSON/YAML metacharacters must stay escaped so output remains well-formed
+    provenance: {source: adversarial, note: "active-content battery"}
+    rationale:
+      type: docs
+      ref: https://cwe.mitre.org/data/definitions/116.html
+      section: Improper Encoding or Escaping of Output
+    files: [security/inert/json-yaml-meta/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: parse-ok}
+  - id: security.inert.dollar-interp
+    feature: active-content
+    kind: security
+    description: dollar-brace and dollar-paren injection-looking text after Compose dollar-dollar escape
+    provenance: {source: adversarial, note: "active-content battery"}
+    rationale:
+      type: docs
+      ref: https://cwe.mitre.org/data/definitions/78.html
+      section: Improper Neutralization of Special Elements used in an OS Command
+    files: [security/inert/dollar-interp/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: parse-ok}
+  - id: security.inert.crlf
+    feature: active-content
+    kind: security
+    description: CRLF / newline injection-looking values must not break output format
+    provenance: {source: adversarial, note: "active-content battery"}
+    rationale:
+      type: docs
+      ref: https://cwe.mitre.org/data/definitions/93.html
+      section: Improper Neutralization of CRLF Sequences (CRLF Injection)
+    files: [security/inert/crlf/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: parse-ok}
+  - id: security.inert.format-string
+    feature: active-content
+    kind: security
+    description: Format-string percent-s percent-n must print as data, not as a format
+    provenance: {source: adversarial, note: "active-content battery"}
+    rationale:
+      type: docs
+      ref: https://cwe.mitre.org/data/definitions/134.html
+      section: Use of Externally-Controlled Format String
+    files: [security/inert/format-string/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: parse-ok}
+  - id: security.inert.long-value
+    feature: active-content
+    kind: security
+    description: Long values must keep JSON/SARIF/human well-formed (thousands of chars in-process)
+    provenance: {source: adversarial, note: "active-content battery"}
+    rationale:
+      type: docs
+      ref: https://cwe.mitre.org/data/definitions/400.html
+      section: Uncontrolled Resource Consumption
+    files: [security/inert/long-value/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: parse-ok}
+
+  - id: security.report-xss.xss-script
+    feature: active-content
+    kind: security
+    description: Script-tag payload for HTML report escaping
+    provenance: {source: adversarial, note: "report-xss"}
+    rationale:
+      type: docs
+      ref: https://cwe.mitre.org/data/definitions/79.html
+      section: Improper Neutralization of Input During Web Page Generation (Cross-site Scripting)
+    files: [security/report-xss/xss-script/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: files-exist}
+  - id: security.report-xss.xss-event
+    feature: active-content
+    kind: security
+    description: Event-handler payload for HTML report escaping
+    provenance: {source: adversarial, note: "report-xss"}
+    rationale:
+      type: docs
+      ref: https://cwe.mitre.org/data/definitions/79.html
+      section: Improper Neutralization of Input During Web Page Generation (Cross-site Scripting)
+    files: [security/report-xss/xss-event/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: files-exist}
+  - id: security.report-xss.xss-javascript-url
+    feature: active-content
+    kind: security
+    description: JavaScript-URL payload for HTML report text rendering
+    provenance: {source: adversarial, note: "report-xss"}
+    rationale:
+      type: docs
+      ref: https://cwe.mitre.org/data/definitions/79.html
+      section: Improper Neutralization of Input During Web Page Generation (Cross-site Scripting)
+    files: [security/report-xss/xss-javascript-url/compose.yaml]
+    expected:
+      engine: pending-engine
+      local: {assertion: files-exist}
+
+  - id: identity.dotted
+    feature: identity
+    kind: baseline
+    description: Legal dotted Compose service name web.api round-trips without truncation
+    provenance: {source: synthetic, note: reversible dotted-service identity}
+    files: [identity/dotted/compose.yaml]
+    expected:
+      engine: pending-engine
+      local:
+        assertion: parse-services
+        services: [web.api]
+  - id: identity.collision
+    feature: identity
+    kind: baseline
+    description: web and web.api remain distinct service identities
+    provenance: {source: synthetic, note: reversible dotted-service identity}
+    files: [identity/collision/compose.yaml]
+    expected:
+      engine: pending-engine
+      local:
+        assertion: parse-services
+        services: [web, web.api]
+
+  - id: perf.large
+    feature: yaml
+    kind: baseline
+    description: Representative large-but-legal project for benches, interactivity threshold, and max-input policy
+    provenance: {source: synthetic, note: "performance and maximum-input policy"}
+    files:
+      - perf/large/compose.yaml
+      - perf/large/overlay.yaml
+    expected:
+      engine: pending-engine
+      local: {assertion: parse-ok}
+

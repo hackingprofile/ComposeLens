@@ -1,0 +1,6 @@
+# Event-handler payload for HTML report escaping.
+services:
+  web:
+    image: alpine
+    labels:
+      caption: '"><img src=x onerror=alert(1)>'

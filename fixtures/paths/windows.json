@@ -1,0 +1,29 @@
+{
+  "goos": "windows",
+  "cases": [
+    {
+      "name": "simple-join",
+      "projectDir": "C:\\proj",
+      "relative": "compose.yaml",
+      "wantSlash": "C:/proj/compose.yaml"
+    },
+    {
+      "name": "dot-rel",
+      "projectDir": "C:\\proj\\app",
+      "relative": ".\\compose.yaml",
+      "wantSlash": "C:/proj/app/compose.yaml"
+    },
+    {
+      "name": "parent-rel",
+      "projectDir": "C:\\proj\\app",
+      "relative": "..\\compose.yaml",
+      "wantSlash": "C:/proj/compose.yaml"
+    },
+    {
+      "name": "already-abs",
+      "projectDir": "C:\\proj",
+      "relative": "D:\\other\\compose.yaml",
+      "wantSlash": "D:/other/compose.yaml"
+    }
+  ]
+}

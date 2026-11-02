@@ -1,0 +1,6 @@
+services:
+  common:
+    image: busybox
+  cli:
+    extends: common
+    hostname: local

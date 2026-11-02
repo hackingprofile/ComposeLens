@@ -1,0 +1,11 @@
+name: engineadapter-sample
+services:
+  web:
+    environment:
+      COLOR: blue
+    image: alpine:3.20
+    networks:
+      default: null
+networks:
+  default:
+    name: engineadapter-sample_default

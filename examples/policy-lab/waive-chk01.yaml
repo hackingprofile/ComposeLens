@@ -1,0 +1,7 @@
+schema: composelens.policy.v0
+rules:
+  - id: CHK01
+    severity: error
+exceptions:
+  - rule: CHK01
+    expires: "2099-12-31"

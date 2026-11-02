@@ -1,0 +1,4 @@
+services:
+  web:
+    command: ["echo", "over"]
+    entrypoint: ["echo", "over-entry"]

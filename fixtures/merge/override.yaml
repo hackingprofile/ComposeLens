@@ -1,0 +1,5 @@
+# Issue-derived: !override replaces a mapping instead of deep-merging.
+services:
+  web:
+    environment: !override
+      ONLY: kept

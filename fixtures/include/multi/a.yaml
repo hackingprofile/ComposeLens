@@ -1,0 +1,4 @@
+services:
+  web:
+    image: one
+    hostname: from-a

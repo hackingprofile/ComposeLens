@@ -1,0 +1,6 @@
+# JavaScript-URL payload for HTML report text rendering.
+services:
+  web:
+    image: alpine
+    labels:
+      caption: "javascript:alert(1)"

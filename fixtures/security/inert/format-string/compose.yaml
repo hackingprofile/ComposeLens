@@ -1,0 +1,6 @@
+services:
+  web:
+    image: alpine
+    hostname: ${COLOR:-web}
+    environment:
+      NOTE: "%s%n%x"

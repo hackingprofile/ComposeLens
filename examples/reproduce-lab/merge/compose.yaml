@@ -1,0 +1,6 @@
+services:
+  web:
+    image: alpine
+    hostname: base
+  cache:
+    image: redis

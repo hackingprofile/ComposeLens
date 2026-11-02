@@ -1,0 +1,18 @@
+{
+  "schema": "composelens.check.v0",
+  "product": "composelens",
+  "version": "0.1.0",
+  "disclaimer": "fixed ruleset over existing stage provenance — not a policy engine, not a provenance graph",
+  "ruleset": "fixed-v0",
+  "findings": [],
+  "counts": {
+    "error": 0,
+    "warning": 0,
+    "info": 0,
+    "waived": 0,
+    "total": 0
+  },
+  "evidence": "known",
+  "certainty": "proven",
+  "gate": "error"
+}

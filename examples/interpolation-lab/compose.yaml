@@ -1,0 +1,15 @@
+services:
+  demo:
+    image: ${IMAGE}
+    hostname: $HOST
+    working_dir: ${WORKDIR:-/app}
+    user: ${USER-nobody}
+    command:
+      - ${ENTRY:+start}
+      - ${FLAG+on}
+      - $$escaped
+    environment:
+      COLOR: ${COLOR}
+      REQUIRED: ${MUST:?must be set}
+      MAYBE: ${MAYBE?maybe must be set}
+      MISSING: ${MISSING_REQUIRED:?set MISSING_REQUIRED}

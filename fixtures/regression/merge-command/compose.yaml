@@ -1,0 +1,5 @@
+services:
+  web:
+    image: alpine
+    command: ["echo", "base"]
+    entrypoint: ["echo", "base-entry"]

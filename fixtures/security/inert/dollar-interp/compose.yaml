@@ -1,0 +1,7 @@
+services:
+  web:
+    image: alpine
+    hostname: ${COLOR:-web}
+    environment:
+      NOTE: "$${HOME}"
+      CMD: "$$(whoami)"

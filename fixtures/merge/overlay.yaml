@@ -1,0 +1,9 @@
+# Overlay: image scalar, environment map merge, ports sequence append.
+services:
+  web:
+    image: redis
+    environment:
+      B: two-b
+      C: three
+    ports:
+      - "8080:80"

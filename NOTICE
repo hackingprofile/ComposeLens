@@ -1,0 +1,8 @@
+ComposeLens
+Copyright 2026 ComposeLens
+
+Licensed under the Apache License, Version 2.0
+
+This product statically links third-party code (gopkg.in/yaml.v3 and the Go
+standard library); their copyright and licence notices are in
+THIRD_PARTY_NOTICES.md, which must accompany every binary distribution.

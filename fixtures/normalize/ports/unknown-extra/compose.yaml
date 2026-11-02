@@ -1,0 +1,8 @@
+services:
+  web:
+    image: alpine
+    ports:
+      - target: 8000
+        published: "8000"
+        protocol: tcp
+        name: not-a-documented-lossless-field

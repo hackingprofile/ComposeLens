@@ -1,0 +1,6 @@
+services:
+  web:
+    image: alpine
+    volumes:
+      - ./src:/dst:ro
+      - data:/var/lib/mysql

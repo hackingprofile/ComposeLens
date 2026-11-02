@@ -1,0 +1,85 @@
+# Composite GitHub Action — ComposeLens check (build from source).
+# Builds the CLI from this source tree (not a release download).
+# Not a GitHub Marketplace listing.
+name: ComposeLens
+description: Run ComposeLens check over a Compose project. Builds the CLI from this source tree (not a release download). Emits JSON, SARIF, a Markdown summary, and GitHub workflow annotations.
+author: ComposeLens
+branding:
+  icon: search
+  color: blue
+
+inputs:
+  project-directory:
+    description: Compose project directory (CLI --project-directory). Default is the current workspace directory.
+    required: false
+    default: "."
+  files:
+    description: Compose files as a newline- or comma-separated list (repeatable CLI --file). Empty uses default discovery.
+    required: false
+    default: ""
+  profiles:
+    description: Active Compose profiles as a newline- or comma-separated list (repeatable CLI --profile). Empty uses COMPOSE_PROFILES / defaults.
+    required: false
+    default: ""
+  policy:
+    description: Optional policy overlay path (CLI --policy). Empty omits the flag (do not pass an empty --policy=).
+    required: false
+    default: ""
+  redact:
+    description: Optional redaction overlay path (CLI --redact). Empty omits the flag.
+    required: false
+    default: ""
+  fail-on:
+    description: Severity that fails the Action step after a completed check — error (default, matches the check assertion gate), warning, info, or never. Does not change the CLI exit taxonomy for --json/--sarif/human. Usage/input/safety failures still fail.
+    required: false
+    default: "error"
+  emit-json:
+    description: Write the check JSON artifact (composelens.check.v0).
+    required: false
+    default: "true"
+  emit-sarif:
+    description: Write the local SARIF 2.1.0 artifact (not an upload).
+    required: false
+    default: "true"
+  emit-summary:
+    description: Write the Markdown step-summary artifact and append to GITHUB_STEP_SUMMARY when that file is set.
+    required: false
+    default: "true"
+  emit-annotations:
+    description: Print GitHub workflow commands (::error / ::warning / ::notice) on the step log so GitHub can annotate files. Proven locally; this Action does not call the GitHub API.
+    required: false
+    default: "true"
+
+outputs:
+  json-path:
+    description: Absolute path of the JSON artifact when emit-json is true; otherwise empty.
+    value: ${{ steps.composelens.outputs.json-path }}
+  sarif-path:
+    description: Absolute path of the SARIF artifact when emit-sarif is true; otherwise empty.
+    value: ${{ steps.composelens.outputs.sarif-path }}
+  summary-path:
+    description: Absolute path of the Markdown summary artifact when emit-summary is true; otherwise empty.
+    value: ${{ steps.composelens.outputs.summary-path }}
+  exit-code:
+    description: Process exit code after fail-on mapping (0, 2, 3, 4, 5, 6, or 1).
+    value: ${{ steps.composelens.outputs.exit-code }}
+
+runs:
+  using: composite
+  steps:
+    - id: composelens
+      name: Build ComposeLens from source and run check
+      shell: bash
+      env:
+        COMPOSELENS_ACTION_PATH: ${{ github.action_path }}
+        INPUT_PROJECT_DIRECTORY: ${{ inputs.project-directory }}
+        INPUT_FILES: ${{ inputs.files }}
+        INPUT_PROFILES: ${{ inputs.profiles }}
+        INPUT_POLICY: ${{ inputs.policy }}
+        INPUT_REDACT: ${{ inputs.redact }}
+        INPUT_FAIL_ON: ${{ inputs.fail-on }}
+        INPUT_EMIT_JSON: ${{ inputs.emit-json }}
+        INPUT_EMIT_SARIF: ${{ inputs.emit-sarif }}
+        INPUT_EMIT_SUMMARY: ${{ inputs.emit-summary }}
+        INPUT_EMIT_ANNOTATIONS: ${{ inputs.emit-annotations }}
+      run: bash "$COMPOSELENS_ACTION_PATH/scripts/composelens-action.sh"

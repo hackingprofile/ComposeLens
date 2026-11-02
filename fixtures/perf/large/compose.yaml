@@ -1,0 +1,362 @@
+# Representative large-but-legal Compose project. Placeholder/demo values only.
+services:
+  svc00:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c00
+    ports:
+      - "8000:80"
+    volumes:
+      - ./data00:/data:ro
+  svc01:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c01
+    ports:
+      - "8001:80"
+    volumes:
+      - ./data01:/data:ro
+  svc02:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c02
+    ports:
+      - "8002:80"
+    volumes:
+      - ./data02:/data:ro
+  svc03:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c03
+    ports:
+      - "8003:80"
+    volumes:
+      - ./data03:/data:ro
+  svc04:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c04
+    ports:
+      - "8004:80"
+    volumes:
+      - ./data04:/data:ro
+  svc05:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c05
+    ports:
+      - "8005:80"
+    volumes:
+      - ./data05:/data:ro
+  svc06:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c06
+    ports:
+      - "8006:80"
+    volumes:
+      - ./data06:/data:ro
+  svc07:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c07
+    ports:
+      - "8007:80"
+    volumes:
+      - ./data07:/data:ro
+  svc08:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c08
+    ports:
+      - "8008:80"
+    volumes:
+      - ./data08:/data:ro
+  svc09:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c09
+    ports:
+      - "8009:80"
+    volumes:
+      - ./data09:/data:ro
+  svc10:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c10
+    ports:
+      - "8010:80"
+    volumes:
+      - ./data10:/data:ro
+  svc11:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c11
+    ports:
+      - "8011:80"
+    volumes:
+      - ./data11:/data:ro
+  svc12:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c12
+    ports:
+      - "8012:80"
+    volumes:
+      - ./data12:/data:ro
+  svc13:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c13
+    ports:
+      - "8013:80"
+    volumes:
+      - ./data13:/data:ro
+  svc14:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c14
+    ports:
+      - "8014:80"
+    volumes:
+      - ./data14:/data:ro
+  svc15:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c15
+    ports:
+      - "8015:80"
+    volumes:
+      - ./data15:/data:ro
+  svc16:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c16
+    ports:
+      - "8016:80"
+    volumes:
+      - ./data16:/data:ro
+  svc17:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c17
+    ports:
+      - "8017:80"
+    volumes:
+      - ./data17:/data:ro
+  svc18:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c18
+    ports:
+      - "8018:80"
+    volumes:
+      - ./data18:/data:ro
+  svc19:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c19
+    ports:
+      - "8019:80"
+    volumes:
+      - ./data19:/data:ro
+  svc20:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c20
+    ports:
+      - "8020:80"
+    volumes:
+      - ./data20:/data:ro
+  svc21:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c21
+    ports:
+      - "8021:80"
+    volumes:
+      - ./data21:/data:ro
+  svc22:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c22
+    ports:
+      - "8022:80"
+    volumes:
+      - ./data22:/data:ro
+  svc23:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c23
+    ports:
+      - "8023:80"
+    volumes:
+      - ./data23:/data:ro
+  svc24:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c24
+    ports:
+      - "8024:80"
+    volumes:
+      - ./data24:/data:ro
+  svc25:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c25
+    ports:
+      - "8025:80"
+    volumes:
+      - ./data25:/data:ro
+  svc26:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c26
+    ports:
+      - "8026:80"
+    volumes:
+      - ./data26:/data:ro
+  svc27:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c27
+    ports:
+      - "8027:80"
+    volumes:
+      - ./data27:/data:ro
+  svc28:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c28
+    ports:
+      - "8028:80"
+    volumes:
+      - ./data28:/data:ro
+  svc29:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c29
+    ports:
+      - "8029:80"
+    volumes:
+      - ./data29:/data:ro
+  svc30:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c30
+    ports:
+      - "8030:80"
+    volumes:
+      - ./data30:/data:ro
+  svc31:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c31
+    ports:
+      - "8031:80"
+    volumes:
+      - ./data31:/data:ro
+  svc32:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c32
+    ports:
+      - "8032:80"
+    volumes:
+      - ./data32:/data:ro
+  svc33:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c33
+    ports:
+      - "8033:80"
+    volumes:
+      - ./data33:/data:ro
+  svc34:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c34
+    ports:
+      - "8034:80"
+    volumes:
+      - ./data34:/data:ro
+  svc35:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c35
+    ports:
+      - "8035:80"
+    volumes:
+      - ./data35:/data:ro
+  svc36:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c36
+    ports:
+      - "8036:80"
+    volumes:
+      - ./data36:/data:ro
+  svc37:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c37
+    ports:
+      - "8037:80"
+    volumes:
+      - ./data37:/data:ro
+  svc38:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c38
+    ports:
+      - "8038:80"
+    volumes:
+      - ./data38:/data:ro
+  svc39:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: c39
+    ports:
+      - "8039:80"
+    volumes:
+      - ./data39:/data:ro

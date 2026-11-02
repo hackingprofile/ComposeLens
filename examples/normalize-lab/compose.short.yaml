@@ -1,0 +1,12 @@
+services:
+  web:
+    image: alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./src:/dst:ro
+    labels:
+      - app=web
+    command: nginx -g daemon off;
+    healthcheck:
+      test: curl -f localhost

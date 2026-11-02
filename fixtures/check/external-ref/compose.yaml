@@ -1,0 +1,7 @@
+# CHK01 must not fire for an external ${SECRET_ENV} reference (no hardcoded secret in the file).
+
+services:
+  web:
+    image: alpine
+    environment:
+      SECRET_ENV: ${SECRET_ENV}

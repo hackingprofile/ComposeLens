@@ -1,0 +1,4 @@
+include: [missing.yaml]
+services:
+  web:
+    image: alpine

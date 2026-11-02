@@ -1,0 +1,11 @@
+x-common: &common
+  image: alpine:3.20
+  restart: unless-stopped
+
+services:
+  web:
+    <<: *common
+    command: ["httpd"]
+  worker:
+    <<: *common
+    command: ["worker"]

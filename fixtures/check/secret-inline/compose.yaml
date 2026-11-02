@@ -1,0 +1,7 @@
+# CHK01: secret-keyed value defined inline (not ${VAR}). Demo value is not a token pattern.
+
+services:
+  web:
+    image: alpine
+    environment:
+      API_TOKEN: demo-inline

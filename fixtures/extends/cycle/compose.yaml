@@ -1,0 +1,9 @@
+services:
+  a:
+    extends:
+      service: b
+    image: a
+  b:
+    extends:
+      service: a
+    image: b

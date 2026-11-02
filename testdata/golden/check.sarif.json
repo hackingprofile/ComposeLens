@@ -1,0 +1,95 @@
+{
+  "$schema": "https://docs.oasis-open.org/sarif/sarif/v2.1.0/errata01/os/schemas/sarif-schema-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "composelens",
+          "version": "0.1.0",
+          "rules": [
+            {
+              "id": "CHK01",
+              "name": "secret-inline",
+              "shortDescription": {
+                "text": "Secret-keyed or secret-looking value defined inline"
+              },
+              "fullDescription": {
+                "text": "A secret-keyed or secret-looking value is defined inline in the effective Compose model. Use an external secret source. Values are never emitted."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              }
+            },
+            {
+              "id": "CHK02",
+              "name": "required-unset",
+              "shortDescription": {
+                "text": "Required interpolation is unset"
+              },
+              "fullDescription": {
+                "text": "A ${VAR:?} / ${VAR?} required interpolation is in the required-error state. ComposeLens does not fabricate a value."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              }
+            },
+            {
+              "id": "CHK03",
+              "name": "profiled-dependency-gap",
+              "shortDescription": {
+                "text": "Enabled service depends_on a profile-gated target"
+              },
+              "fullDescription": {
+                "text": "An enabled service depends_on a target gated behind an inactive profile. Compose does not document auto-enabling that dependency."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              }
+            },
+            {
+              "id": "CHK04",
+              "name": "missing-target",
+              "shortDescription": {
+                "text": "include: or extends target is absent"
+              },
+              "fullDescription": {
+                "text": "An include: or extends reference points at a missing file or service. Cycle and unsupported forms are not this check."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              }
+            },
+            {
+              "id": "CHK05",
+              "name": "env-shadowing",
+              "shortDescription": {
+                "text": "Container-environment variable shadowed"
+              },
+              "fullDescription": {
+                "text": "A container-environment variable is set by multiple sources and a lower-precedence source was overridden."
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              }
+            },
+            {
+              "id": "CHK06",
+              "name": "compose-rejects",
+              "shortDescription": {
+                "text": "Compose rejects this input"
+              },
+              "fullDescription": {
+                "text": "docker compose config would refuse this file: an unknown top-level key, a non-string name or version, an invalid interpolation format, an include: that is not a list, or an include or extends cycle."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              }
+            }
+          ]
+        }
+      },
+      "results": []
+    }
+  ]
+}

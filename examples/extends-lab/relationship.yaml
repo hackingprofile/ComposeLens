@@ -1,0 +1,11 @@
+services:
+  db:
+    image: postgres
+  common:
+    image: busybox
+    depends_on: [db]
+    container_name: base-name
+  cli:
+    extends:
+      service: common
+    hostname: local

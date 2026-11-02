@@ -1,0 +1,11 @@
+# Official Compose merge examples: scalars override, maps deep-merge, sequences append.
+services:
+  web:
+    image: nginx
+    hostname: from-base
+    environment:
+      A: one
+      B: two
+    ports:
+      - "80:80"
+      - "443:443"

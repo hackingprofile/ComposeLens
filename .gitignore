@@ -1,0 +1,56 @@
+# Binaries
+/composelens
+/composelens.exe
+/bin/
+/dist/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Coverage / generated
+coverage.*
+*.cover
+profile.cov
+
+# Ignored operator files
+/.local/
+
+# Tooling / editor
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Local toolchain
+/.tools/
+
+# Go workspace leftovers
+vendor/
+go.work
+go.work.sum
+
+# Operator files: local env files, generated reports, CI artifacts and support
+# bundles can hold real project values; keep them out of commits.
+.env
+.env.*
+*.env
+report.html
+report.json
+composelens-report.*
+composelens-support*.json
+composelens-check.*
+composelens-annotations.txt
+
+# Public lab, example, fixture and golden data is synthetic and stays tracked.
+!/examples/**/.env
+!/examples/**/.env.*
+!/examples/**/*.env
+!/fixtures/**/.env
+!/fixtures/**/.env.*
+!/fixtures/**/*.env
+!/testdata/**

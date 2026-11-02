@@ -1,0 +1,7 @@
+# CHK01 must not fire for a non-secret interpolation default.
+
+services:
+  web:
+    image: alpine
+    environment:
+      COLOR: ${UNSET_VAR:-plain}

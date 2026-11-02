@@ -1,0 +1,12 @@
+services:
+  common:
+    image: busybox
+    hostname: from-base
+  web:
+    extends:
+      service: common
+    environment:
+      COLOR: ${TINT}
+  debug:
+    image: alpine
+    profiles: [debug]

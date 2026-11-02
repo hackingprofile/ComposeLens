@@ -1,0 +1,6 @@
+services:
+  web:
+    image: alpine
+    hostname: ${PINNED}
+    environment:
+      PINNED: ${PINNED}

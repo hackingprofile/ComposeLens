@@ -1,0 +1,6 @@
+ComposeLens check — fixed ruleset over existing stage provenance — not a policy engine, not a provenance graph
+
+ruleset: fixed-v0
+findings: 0  errors: 0  warnings: 0  info: 0  waived: 0
+gate: error
+  (none)

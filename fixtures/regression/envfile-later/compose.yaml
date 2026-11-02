@@ -1,0 +1,6 @@
+services:
+  web:
+    image: alpine
+    env_file:
+      - a.env
+      - b.env

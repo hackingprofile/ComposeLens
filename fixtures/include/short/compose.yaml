@@ -1,0 +1,4 @@
+include: base.yaml
+services:
+  web:
+    image: overridden

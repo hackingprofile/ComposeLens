@@ -1,0 +1,6 @@
+services:
+  web:
+    image: alpine
+    labels:
+      - app=web
+      - com.example.role=front

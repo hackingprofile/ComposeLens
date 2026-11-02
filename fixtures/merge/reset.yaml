@@ -1,0 +1,4 @@
+# Issue-derived: !reset clears a mapping branch; Compose Specification custom tags.
+services:
+  web:
+    environment: !reset {}

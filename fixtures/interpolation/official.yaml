@@ -1,0 +1,16 @@
+# Official Docker Compose interpolation examples (Compose specification forms).
+# Values are resolved against interpolation sources, not container environment.
+services:
+  official:
+    image: ${IMAGE}
+    hostname: $HOST
+    working_dir: ${WORKDIR:-/app}
+    user: ${USER-nobody}
+    command:
+      - ${ENTRY:+start}
+      - ${FLAG+on}
+      - $$escaped
+    environment:
+      REQUIRED: "${MUST:?must be set}"
+      OPTIONAL_REQUIRED: "${MAYBE?maybe must be set}"
+      LITERAL_DOLLAR: "$$VAR"

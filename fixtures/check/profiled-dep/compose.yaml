@@ -1,0 +1,11 @@
+# CHK03: enabled web depends_on profiled db with no active profile.
+
+services:
+  web:
+    image: nginx
+    depends_on:
+      - db
+  db:
+    image: postgres
+    profiles:
+      - storage

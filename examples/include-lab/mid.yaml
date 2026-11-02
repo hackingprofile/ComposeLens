@@ -1,0 +1,4 @@
+include: [inner.yaml]
+services:
+  mid:
+    image: busybox

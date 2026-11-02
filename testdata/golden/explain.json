@@ -1,0 +1,73 @@
+{
+  "schema": "composelens.graph.v0",
+  "product": "composelens",
+  "version": "0.1.0",
+  "disclaimer": "whole-model provenance graph assembled from existing stage outputs — not a new resolver, not an engine differential",
+  "nodes": [
+    {
+      "target": "web",
+      "kind": "service",
+      "state": "ok",
+      "effective": "enabled",
+      "secret": false,
+      "finalStage": "profiles",
+      "shadowChain": [
+        {
+          "order": 1,
+          "role": "winner",
+          "stage": "profiles",
+          "kind": "profiles",
+          "source": "enabled",
+          "state": "enabled",
+          "secret": false,
+          "certainty": "proven",
+          "evidence": "known"
+        }
+      ],
+      "certainty": "proven",
+      "evidence": "known"
+    },
+    {
+      "target": "services.web.image",
+      "kind": "field",
+      "state": "ok",
+      "effective": "alpine",
+      "secret": false,
+      "finalStage": "merge",
+      "shadowChain": [
+        {
+          "order": 1,
+          "role": "winner",
+          "stage": "merge",
+          "kind": "file",
+          "source": "{project}/fixtures/check/clean/compose.yaml",
+          "state": "source",
+          "secret": false,
+          "certainty": "proven",
+          "evidence": "known"
+        },
+        {
+          "order": 2,
+          "role": "winner",
+          "stage": "profiles",
+          "kind": "profiles",
+          "source": "enabled",
+          "state": "enabled",
+          "secret": false,
+          "certainty": "proven",
+          "evidence": "known"
+        }
+      ],
+      "certainty": "proven",
+      "evidence": "known"
+    }
+  ],
+  "counts": {
+    "services": 1,
+    "fields": 1,
+    "env": 0,
+    "total": 2
+  },
+  "evidence": "known",
+  "certainty": "proven"
+}

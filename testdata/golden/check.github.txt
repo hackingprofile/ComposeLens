@@ -1,0 +1,1 @@
+::warning file=compose.yaml,line=7::CHK01 web:API_TOKEN: secret-keyed or secret-looking value is defined inline in the Compose model; use an external secret source instead

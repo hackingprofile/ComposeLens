@@ -1,0 +1,13 @@
+# Official Compose profile examples (always-on, single profile, multiple profiles).
+services:
+  web:
+    image: nginx
+  debug:
+    image: alpine
+    profiles:
+      - debug
+  worker:
+    image: busybox
+    profiles:
+      - debug
+      - tools

@@ -1,0 +1,5 @@
+schema: composelens.redact.v0
+secretKeys:
+  - X_INTERNAL_ID
+secretValues:
+  - "^clx_[A-Za-z0-9]{24,}$"

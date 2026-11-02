@@ -1,0 +1,18 @@
+header:
+  license:
+    spdx-id: Apache-2.0
+    # Every first-party Go source file starts with this SPDX line; the full
+    # licence text is in LICENSE and the attribution in NOTICE.
+    content: |
+      SPDX-License-Identifier: Apache-2.0
+  comment: never
+  paths:
+    - "cmd/**/*.go"
+    - "internal/**/*.go"
+  paths-ignore:
+    # Decoder and golden inputs; not distributed source.
+    - "**/testdata/**"
+
+dependency:
+  files:
+    - go.mod

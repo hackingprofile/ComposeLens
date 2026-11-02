@@ -1,0 +1,7 @@
+# Very-long values (thousands of characters) are injected in-process; this row stays parseable.
+services:
+  web:
+    image: alpine
+    hostname: ${COLOR:-web}
+    environment:
+      NOTE: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa

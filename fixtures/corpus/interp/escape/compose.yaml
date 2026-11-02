@@ -1,0 +1,7 @@
+services:
+  web:
+    image: alpine
+    environment:
+      LITERAL: $$VAR
+      LITERAL_BRACED: $${notavar}
+      MIXED: pre-$$HOME-post

@@ -1,0 +1,7 @@
+include:
+  path: base.yaml
+  env_file: extra.env
+  project_directory: .
+services:
+  web:
+    hostname: x

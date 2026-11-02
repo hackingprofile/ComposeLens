@@ -1,0 +1,4 @@
+include: [mid.yaml]
+services:
+  web:
+    image: nginx

@@ -1,0 +1,46 @@
+version: "2"
+
+run:
+  timeout: 5m
+  tests: true
+
+linters:
+  default: standard
+  enable:
+    # standard set, listed for clarity (gosimple is part of staticcheck in v2)
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    # additional linters
+    - misspell
+    - unconvert
+    - unparam
+    - gocritic
+    - revive
+  settings:
+    revive:
+      rules:
+        - name: exported
+          disabled: true
+        - name: package-comments
+          disabled: true
+  exclusions:
+    generated: lax
+    # no preset exclusions: every finding is reported
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

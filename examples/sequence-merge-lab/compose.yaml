@@ -1,0 +1,10 @@
+services:
+  web:
+    image: alpine
+    ports:
+      - "8080:80"
+    dns:
+      - 1.1.1.1
+    command: ["echo", "base"]
+    volumes:
+      - ./a:/data

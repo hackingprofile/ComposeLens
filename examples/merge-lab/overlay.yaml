@@ -1,0 +1,8 @@
+services:
+  web:
+    image: redis
+    environment:
+      B: two-b
+      C: three
+    ports:
+      - "8080:80"

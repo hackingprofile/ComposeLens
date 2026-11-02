@@ -1,0 +1,45 @@
+# Local licence inventory is from go.mod / go.sum and LICENSE files in
+# the module cache (see docs/security-automation.md).
+#
+# Action pins are immutable full 40-hex-char commit SHAs. Readable tags
+# are comments only (same style as .github/workflows/ci.yml).
+#
+# license-eye runs as a module-versioned `go run` (checksum-verified through
+# go.sum / the Go checksum database), not through the skywalking-eyes
+# composite actions: at its pinned SHA the dependency action itself runs
+# actions/setup-go@v6, a mutable tag. license-eye v0.9.0 needs a Go release of at
+# least 1.25.3; this job pins the same exact release as go.mod (Go 1.27.3), which
+# ci.yml installs through go-version-file.
+
+name: license-scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  license:
+    name: license-eye
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Go (scanner toolchain)
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.27.3"
+          cache: false
+
+      - name: License header check
+        run: go run github.com/apache/skywalking-eyes/cmd/license-eye@v0.9.0 header check
+
+      - name: Dependency license check
+        run: go run github.com/apache/skywalking-eyes/cmd/license-eye@v0.9.0 dependency check

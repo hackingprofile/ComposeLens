@@ -1,0 +1,95 @@
+{
+  "schema": "composelens.inspect.v0",
+  "product": "composelens",
+  "version": "0.1.0",
+  "view": "source-level",
+  "disclaimer": "source-level view — not resolved provenance",
+  "projectDirectory": "{project}/fixtures/check/clean",
+  "files": [
+    {
+      "path": "{project}/fixtures/check/clean/compose.yaml",
+      "digest": "sha256:1cc5f10bd8209270fd11bf9368cad3c4cd8377ff3b419b043fb8280d3f6c2c00",
+      "origin": "default",
+      "index": 0,
+      "evidence": "known",
+      "certainty": "proven"
+    }
+  ],
+  "fileEvidence": "known",
+  "services": [
+    {
+      "name": "web",
+      "location": {
+        "file": "{project}/fixtures/check/clean/compose.yaml",
+        "line": 4,
+        "column": 3
+      },
+      "evidence": "known",
+      "certainty": "proven"
+    }
+  ],
+  "environment": [],
+  "interpolationDisclaimer": "interpolation stage only — per-file (including files pulled in by include:), before merge; not container environment; nested defaults expand as in Compose",
+  "interpolation": [],
+  "includesDisclaimer": "top-level include: after per-file interpolation, before merge; included files are the base, including file overrides; long-form env_file and project_directory are not applied (unknown vs official engine)",
+  "includes": [
+    {
+      "file": "{project}/fixtures/check/clean/compose.yaml",
+      "hasCycle": false,
+      "refs": []
+    }
+  ],
+  "extendsDisclaimer": "service extends after interpolation (and include expansion of each file), before merge; mapping form {service, file?}; relationship keys are not inherited; string short form is unsupported; not container-environment precedence",
+  "extends": [],
+  "mergeDisclaimer": "multi-file merge after interpolation, include expansion, and extends — scalars override, maps deep-merge, sequences append (unique-key dedup for ports/volumes/secrets/configs; command/entrypoint/healthcheck.test replace), !reset/!override; not container-environment precedence",
+  "merge": [
+    {
+      "path": "services.web.image",
+      "action": "source",
+      "winner": "{project}/fixtures/check/clean/compose.yaml",
+      "line": 5,
+      "value": {
+        "state": "source",
+        "redacted": false,
+        "text": "alpine"
+      },
+      "overridden": [],
+      "extendsOrigin": "add",
+      "certainty": "proven",
+      "evidence": "known"
+    }
+  ],
+  "profilesDisclaimer": "profile activation after merge — no-profiles always on; enable if any listed profile is active; a profiled depends_on target with no active profile is not auto-enabled (certainty unknown)",
+  "activeProfiles": [],
+  "profileServices": [
+    {
+      "name": "web",
+      "state": "enabled",
+      "reason": "no-profiles (always on)",
+      "listed": [],
+      "matched": null,
+      "matchedSource": null,
+      "implicitOf": null,
+      "certainty": "proven",
+      "evidence": "known"
+    }
+  ],
+  "containerEnvironmentDisclaimer": "container environment after interpolation, include, extends, merge, and profiles — env_file then environment (environment wins); later env_file overrides earlier; list-form KEY with no value is host-shell pass-through; Dockerfile ENV and run -e are not applied",
+  "containerEnvironment": [
+    {
+      "service": "web",
+      "files": [],
+      "variables": []
+    }
+  ],
+  "normalizationDisclaimer": "canonical dual-form fields after merge — short/long ports, volumes, labels, command/entrypoint representation, healthcheck.test; not a new resolver; shell vs exec stay distinct; environment/env_file stay with container environment",
+  "normalization": [
+    {
+      "service": "web",
+      "ports": [],
+      "volumes": [],
+      "labels": []
+    }
+  ],
+  "evidence": "unresolved"
+}

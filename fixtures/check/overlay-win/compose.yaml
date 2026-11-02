@@ -1,0 +1,7 @@
+# CHK01: losing ${TOKEN} on the base file must not hide a winning overlay literal.
+
+services:
+  web:
+    image: alpine
+    environment:
+      API_TOKEN: ${TOKEN}

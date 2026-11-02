@@ -1,0 +1,7 @@
+services:
+  common:
+    image: busybox
+    hostname: from-base
+  app:
+    extends:
+      service: common

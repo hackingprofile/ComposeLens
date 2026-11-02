@@ -1,0 +1,10 @@
+services:
+  web:
+    image: alpine
+    environment:
+      COLON_EMPTY: ${EMPTY:-fallback}
+      COLON_UNSET: ${MISSING:-fallback}
+      DASH_EMPTY: x${EMPTY-keep}x
+      DASH_UNSET: ${MISSING-fallback}
+      COLON_SET: ${SET:-fallback}
+      DASH_SET: ${SET-fallback}

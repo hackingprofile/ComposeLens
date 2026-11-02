@@ -1,0 +1,7 @@
+{
+  "services": {
+    "api": {
+      "image": "alpine:3.20"
+    }
+  }
+}

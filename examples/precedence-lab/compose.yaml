@@ -1,0 +1,7 @@
+services:
+  web:
+    image: nginx:1.27-alpine
+    environment:
+      APP_ENV: dev
+  db:
+    image: postgres:16-alpine

@@ -1,0 +1,6 @@
+services:
+  web:
+    extends:
+      file: base.yaml
+      service: web
+    image: alpine

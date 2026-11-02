@@ -1,0 +1,9 @@
+services:
+  web:
+    image: alpine
+    environment:
+      FOO: from-web
+  web.api:
+    image: nginx:1.25
+    environment:
+      FOO: from-api

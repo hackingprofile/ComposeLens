@@ -1,0 +1,12 @@
+services:
+  common:
+    image: busybox
+    hostname: from-base
+    environment:
+      TZ: utc
+      PORT: "80"
+  cli:
+    extends:
+      service: common
+    environment:
+      PORT: "8080"

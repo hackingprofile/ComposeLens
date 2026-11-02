@@ -1,0 +1,2 @@
+schema: composelens.policy.v0
+gate: warning

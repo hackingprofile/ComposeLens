@@ -1,0 +1,6 @@
+schema: composelens.policy.v0
+rules:
+  CHK99:
+    enabled: false
+  CHK98:
+    enabled: false

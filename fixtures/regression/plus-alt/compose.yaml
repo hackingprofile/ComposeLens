@@ -1,0 +1,10 @@
+services:
+  web:
+    image: alpine
+    environment:
+      COLON_SET: ${FLAG:+yes}
+      COLON_EMPTY: x${EMPTY:+yes}x
+      COLON_UNSET: x${MISSING:+yes}x
+      PLUS_SET: ${FLAG+yes}
+      PLUS_EMPTY: ${EMPTY+yes}
+      PLUS_UNSET: x${MISSING+yes}x

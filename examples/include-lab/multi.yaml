@@ -1,0 +1,6 @@
+include:
+  - a.yaml
+  - b.yaml
+services:
+  web:
+    image: three

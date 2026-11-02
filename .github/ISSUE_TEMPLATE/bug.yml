@@ -1,0 +1,59 @@
+name: Bug report
+description: Report a defect with reproducible, secret-safe evidence.
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Never paste raw secrets. Use key names, path/line, and fingerprints only.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: Observed behavior. Use typed states (known / absent / unresolved / conflict / unsupported) where relevant.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: commands
+    attributes:
+      label: Exact commands
+      description: Copy-paste the commands. Redact secrets.
+      render: bash
+    validations:
+      required: true
+  - type: textarea
+    id: doctor
+    attributes:
+      label: composelens doctor --json
+      description: Paste JSON. Confirm it contains no secrets.
+      render: json
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Platform
+      placeholder: linux/amd64, bash, Go 1.27.3
+    validations:
+      required: true
+  - type: textarea
+    id: bundle
+    attributes:
+      label: Diagnostic bundle (doctor --bundle)
+      description: Prefer attaching composelens-support.json from `composelens doctor --bundle`. It must contain no Compose contents or secrets. See docs/support.md.
+    validations:
+      required: false
+  - type: textarea
+    id: fixtures
+    attributes:
+      label: Minimal fixture
+      description: Attach or paste a minimized compose/.env with secrets removed or replaced.
+    validations:
+      required: false

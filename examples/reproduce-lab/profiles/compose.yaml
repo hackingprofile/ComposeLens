@@ -1,0 +1,7 @@
+services:
+  web:
+    image: alpine
+  debug:
+    image: busybox
+    profiles:
+      - debug

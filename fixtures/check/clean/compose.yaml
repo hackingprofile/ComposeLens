@@ -1,0 +1,5 @@
+# Clean fixture: no findings.
+
+services:
+  web:
+    image: alpine

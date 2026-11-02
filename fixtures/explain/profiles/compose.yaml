@@ -1,0 +1,6 @@
+services:
+  web:
+    image: alpine
+  debug:
+    image: alpine
+    profiles: [debug]

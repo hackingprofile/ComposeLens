@@ -1,0 +1,8 @@
+services:
+  web:
+    image: alpine
+    hostname: $HOST
+    environment:
+      BARE: $HOST
+      ADJACENT: pre${HOST}post
+      CONSEC: ${HOST}${HOST}

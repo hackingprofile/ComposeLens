@@ -1,0 +1,6 @@
+# Script-tag payload for HTML report escaping.
+services:
+  web:
+    image: alpine
+    labels:
+      caption: "<script>alert(1)</script>"

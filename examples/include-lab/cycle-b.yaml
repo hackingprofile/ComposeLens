@@ -1,0 +1,4 @@
+include: [cycle-a.yaml]
+services:
+  b:
+    image: b

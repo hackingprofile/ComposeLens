@@ -1,0 +1,8 @@
+services:
+  web:
+    image: alpine
+    hostname: ${COLOR:-web}
+    environment:
+      NOTE: "<script>alert(1)</script>"
+    labels:
+      caption: "<b>html</b>"

@@ -1,0 +1,22 @@
+{
+  "schema": "composelens.diff.v0",
+  "product": "composelens",
+  "version": "0.1.0",
+  "disclaimer": "effective-config delta over the same Compose files — not a provenance graph, not an engine differential",
+  "left": {
+    "profiles": [
+      "a"
+    ],
+    "envFiles": []
+  },
+  "right": {
+    "profiles": [
+      "b"
+    ],
+    "envFiles": []
+  },
+  "changes": [],
+  "empty": true,
+  "evidence": "known",
+  "certainty": "proven"
+}

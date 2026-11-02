@@ -1,0 +1,7 @@
+services:
+  web:
+    image: alpine
+    environment:
+      FROM_EMPTY: x${EMPTY-fallback}x
+      FROM_UNSET: ${MISSING-fallback}
+      FROM_SET: ${SET-fallback}

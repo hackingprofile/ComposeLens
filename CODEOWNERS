@@ -1,0 +1,8 @@
+# CODEOWNERS
+#
+# No per-path code owners are defined. Pull requests are reviewed by the
+# repository's maintainers (see MAINTAINERS.md).
+#
+# GitHub format, for a future rule (last matching pattern wins):
+#
+#   <path pattern>  <owner>

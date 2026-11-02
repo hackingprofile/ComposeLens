@@ -1,0 +1,43 @@
+name: Feature request
+description: Propose work with evidence of the gap, without overclaiming 0.1.0.
+title: "[feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Never paste raw secrets. Use key names, path/line, and fingerprints only.
+        0.1.0 includes interpolation, merge, profiles, include, extends, container-environment, canonical dual-form normalization, explain (single-target composition), explain --all (provenance graph + shadow-chains), diff (same-file selections), check (fixed ruleset; local SARIF), a local fixture catalog/harness (`docs/fixtures.md`; not a CLI command), a live-pinned interpolation/precedence baseline corpus (`docs/corpus.md`), an engine adapter for `docker compose version`/`config` (`docs/engineadapter.md`), an engine capability map (`docs/enginecap.md`; Compose v2 window), and an engine differential (`docs/differential.md`). It does not include a general policy engine, SARIF upload, or GitHub Marketplace listing.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What can a user not do today? Include a concrete compose/env situation.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: How should the CLI report this? Prefer typed unknown/unsupported over guesses.
+    validations:
+      required: true
+  - type: dropdown
+    id: contract
+    attributes:
+      label: Public contract impact
+      options:
+        - None (internal only)
+        - CLI flags / commands
+        - JSON schema
+        - Exit codes
+        - Evidence vocabulary
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence of the gap
+      description: Commands, doctor JSON, and why existing typed states are insufficient.
+    validations:
+      required: true

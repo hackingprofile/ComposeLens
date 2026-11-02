@@ -1,0 +1,11 @@
+services:
+  web:
+    image: alpine
+    volumes:
+      - type: bind
+        source: ./src
+        target: /dst
+        read_only: true
+      - type: volume
+        source: data
+        target: /var/lib/mysql

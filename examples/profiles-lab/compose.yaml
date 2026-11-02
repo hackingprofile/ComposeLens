@@ -1,0 +1,18 @@
+services:
+  web:
+    image: nginx
+    depends_on:
+      - db
+  debug:
+    image: alpine
+    profiles:
+      - debug
+  worker:
+    image: busybox
+    profiles:
+      - debug
+      - tools
+  db:
+    image: postgres
+    profiles:
+      - storage

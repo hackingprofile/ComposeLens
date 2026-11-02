@@ -1,0 +1,4 @@
+include: [commons.yaml]
+services:
+  web:
+    image: overridden

@@ -1,0 +1,6 @@
+services:
+  web:
+    image: ${IMAGE}
+    hostname: pre${UNSETVAR}post
+    environment:
+      SET: ${SETVAR}

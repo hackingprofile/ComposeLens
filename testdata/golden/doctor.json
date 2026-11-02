@@ -1,0 +1,121 @@
+{
+  "schema": "composelens.doctor.v0",
+  "product": "composelens",
+  "version": "0.1.0",
+  "platform": {
+    "os": "{os}",
+    "arch": "{arch}",
+    "compiler": "gc",
+    "numCPU": 0,
+    "shell": "{shell}", "certainty": "{shell-certainty}"
+  },
+  "engine": {
+    "state": "absent",
+    "certainty": ""
+  },
+  "engineCapabilities": {
+    "schema": "composelens.enginecap.v0",
+    "window": "docker-compose-plugin-v2",
+    "support": "engine-absent",
+    "detail": "docker CLI not found on PATH",
+    "capabilities": [
+      {
+        "id": "compose-config",
+        "state": "unknown",
+        "certainty": "unknown",
+        "detail": "engine absent"
+      },
+      {
+        "id": "compose-interpolation",
+        "state": "unknown",
+        "certainty": "unknown",
+        "detail": "engine absent"
+      },
+      {
+        "id": "compose-include",
+        "state": "unknown",
+        "certainty": "unknown",
+        "detail": "engine absent"
+      },
+      {
+        "id": "compose-extends-mapping",
+        "state": "unknown",
+        "certainty": "unknown",
+        "detail": "engine absent"
+      },
+      {
+        "id": "compose-profiles",
+        "state": "unknown",
+        "certainty": "unknown",
+        "detail": "engine absent"
+      },
+      {
+        "id": "unique-key-sequence-merge",
+        "state": "unknown",
+        "certainty": "unknown",
+        "detail": "engine absent"
+      }
+    ],
+    "evidence": "absent",
+    "certainty": "proven",
+    "disclaimer": "engine capability map -- not a differential; unverified engine behaviors are unknown"
+  },
+  "inputs": {
+    "projectDirectory": "{project}/fixtures/check/clean",
+    "files": [
+      {
+        "path": "{project}/fixtures/check/clean/compose.yaml",
+        "digest": "sha256:1cc5f10bd8209270fd11bf9368cad3c4cd8377ff3b419b043fb8280d3f6c2c00",
+        "origin": "default",
+        "index": 0,
+        "evidence": "known",
+        "certainty": "proven"
+      }
+    ],
+    "fileEvidence": "known"
+  },
+  "features": {
+    "implemented": [
+      "doctor",
+      "inspect-source-level",
+      "version",
+      "file-discovery",
+      "yaml-json-source-ranges",
+      "path-resolution",
+      "env-source-labeling",
+      "secret-redaction",
+      "interpolation-engine",
+      "multi-file-merge",
+      "service-profiles",
+      "compose-include",
+      "service-extends",
+      "container-environment-precedence",
+      "explain",
+      "diff",
+      "check",
+      "provenance-graph",
+      "shadow-chains",
+      "canonical-normalization",
+      "fixture-taxonomy",
+      "compose-engine-adapter",
+      "compose-engine-capability",
+      "compose-engine-differential",
+      "compose-reproduction",
+      "compose-policy-loading",
+      "redaction-config",
+      "report-data-package",
+      "static-html-report",
+      "interactive-html-report",
+      "accessible-html-report",
+      "html-report-csp"
+    ],
+    "deferred": [
+      "recursive-interpolation",
+      "policy-engine",
+      "sarif-upload",
+      "github-action-live",
+      "github-publication"
+    ]
+  },
+  "evidence": "known"
+}

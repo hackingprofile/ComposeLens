@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "composelens.report.v0",
+  "title": "composelens.report.v0",
+  "description": "Self-contained ComposeLens JSON report data package. Human/HTML viewer is out of scope.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "product",
+    "version",
+    "disclaimer",
+    "determinism",
+    "generatedBy",
+    "source",
+    "graph",
+    "check",
+    "diff",
+    "differential",
+    "diagnostics",
+    "evidence",
+    "certainty"
+  ],
+  "properties": {
+    "schema": { "const": "composelens.report.v0" },
+    "product": { "type": "string", "minLength": 1 },
+    "version": { "type": "string", "minLength": 1 },
+    "disclaimer": { "type": "string", "minLength": 1 },
+    "determinism": { "const": "byte-stable-v0" },
+    "generatedBy": { "const": "report --json" },
+    "source": {
+      "type": "object",
+      "required": ["projectDirectory", "files", "fileEvidence", "services"],
+      "properties": {
+        "projectDirectory": { "type": "string" },
+        "fileEvidence": { "type": "string", "minLength": 1 },
+        "files": { "type": "array" },
+        "services": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "identity", "location"],
+            "properties": {
+              "name": { "type": "string", "minLength": 1 },
+              "identity": { "type": "string", "pattern": "^services\\." },
+              "location": { "type": "object" },
+              "evidence": { "type": "string" },
+              "certainty": { "type": "string" }
+            }
+          }
+        },
+        "serviceSummary": {
+          "description": "Each unique service once, with every declaration (file, line, column) across the selected files.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "identity", "declarations"],
+            "properties": {
+              "name": { "type": "string", "minLength": 1 },
+              "identity": { "type": "string", "pattern": "^services\\." },
+              "declarations": { "type": "array", "items": { "type": "object" } }
+            }
+          }
+        }
+      }
+    },
+    "graph": {
+      "type": "object",
+      "required": ["schema"],
+      "properties": {
+        "schema": { "const": "composelens.graph.v0" }
+      }
+    },
+    "check": {
+      "type": "object",
+      "required": ["schema", "findings", "gate", "assertionExit"],
+      "properties": {
+        "schema": { "const": "composelens.check.v0" },
+        "findings": { "type": "array" },
+        "gate": { "type": "string" },
+        "assertionExit": { "type": "integer" }
+      }
+    },
+    "diff": {
+      "type": "object",
+      "required": ["schema"],
+      "properties": {
+        "schema": { "const": "composelens.diff.v0" }
+      }
+    },
+    "differential": {
+      "type": "object",
+      "required": ["schema"],
+      "properties": {
+        "schema": { "const": "composelens.differential.v0" }
+      }
+    },
+    "diagnostics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "message", "remediation", "doc"],
+        "properties": {
+          "code": { "type": "string", "minLength": 1 },
+          "message": { "type": "string", "minLength": 1 },
+          "remediation": { "type": "string", "minLength": 1 },
+          "doc": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "evidence": { "type": "string", "minLength": 1 },
+    "certainty": { "type": "string", "minLength": 1 },
+    "allowShortSecret": {
+      "description": "Keys named with --allow-short-secret: their short secret values were accepted without a byte scan and stay withheld.",
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}

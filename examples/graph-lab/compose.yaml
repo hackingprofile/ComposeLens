@@ -1,0 +1,9 @@
+services:
+  web:
+    image: alpine
+    hostname: ${TINT}
+    env_file: overlay.env
+    environment:
+      COLOR: ${TINT}
+  worker:
+    image: busybox

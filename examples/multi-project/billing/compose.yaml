@@ -1,0 +1,6 @@
+services:
+  billing:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: purple

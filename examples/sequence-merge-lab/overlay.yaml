@@ -1,0 +1,9 @@
+services:
+  web:
+    ports:
+      - "9090:80"
+    dns:
+      - 8.8.8.8
+    command: ["echo", "over"]
+    volumes:
+      - ./b:/data

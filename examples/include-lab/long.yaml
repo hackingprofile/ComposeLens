@@ -1,0 +1,5 @@
+include:
+  path: commons.yaml
+services:
+  extra:
+    image: alpine

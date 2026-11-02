@@ -1,0 +1,15 @@
+# Issue-derived cases: empty vs unset, adjacent text, unrecognized dollar,
+# non-recursive default text, YAML quoting. Recursive interpolation is deferred.
+services:
+  issues:
+    image: pre-${IMAGE}-post
+    hostname: "${QUOTED}"
+    extra_hosts:
+      - "price $5"
+    environment:
+      KEEP_EMPTY: "${EMPTY-keep}"
+      FALLBACK_EMPTY: "${EMPTY:-fallback}"
+      UNSET_DEFAULT: "${UNSET-from-unset}"
+      NESTED_DEFAULT: "${UNSET:-$OTHER}"
+      WINDOWS_STYLE: "%WINVAR%"
+      BARE_UNSET: "$UNSET"

@@ -1,0 +1,10 @@
+services:
+  web:
+    image: alpine
+    hostname: ${HOST_NAME:-webhost}
+    env_file:
+      - a.env
+      - b.env
+    environment:
+      - COLOR=from-compose
+      - DEBUG

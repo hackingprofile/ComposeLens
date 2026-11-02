@@ -1,0 +1,6 @@
+services:
+  web:
+    image: alpine
+    environment:
+      - DEBUG
+      - COLOR=blue

@@ -1,0 +1,6 @@
+services:
+  shop:
+    image: alpine
+    environment:
+      APP_ENV: demo
+      COLOR: orange
